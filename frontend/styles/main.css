@@ -1,0 +1,190 @@
+/* 確保整個頁面使用一致的樣式 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* 懸浮條區 *//* 懸浮條區 *//* 懸浮條區 *//* 懸浮條區 *//* 懸浮條區 */
+
+/* 對 header 設置樣式 */
+header {
+    position: fixed;
+    /* 固定在頁面最上方 */
+    top: 0;
+    /* 距離頂部 0 */
+    left: 0;
+    /* 距離左側 0 */
+    width: 100%;
+    /* 佔據整個寬度 */
+    display: flex;
+    /* 使用 Flexbox 排版 */
+    justify-content: space-between;
+    /* 左中右分佈 */
+    align-items: center;
+    /* 垂直居中 */
+    background-color: #fff;
+    /* 背景顏色，方便視覺清晰 */
+    padding: 1vh 2vw;
+    /* 增加內邊距 */
+    box-shadow: 0 0.2vh 0.5vh rgba(0, 0, 0, 0.1);
+    /* 增加陰影效果 */
+    z-index: 1000;
+    /* 確保 header 層級最高 */
+}
+
+/* Logo 區域 */
+header .logo img {
+    width: auto;
+    /* 根據高度自動調整寬度比例 */
+    height: 10vh;
+    /* 設置高度為視窗高度的 10% */
+    object-fit: contain;
+    /* 保持圖片比例 */
+}
+
+/* 導航菜單樣式 */
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%; /* 占滿 header 寬度 */
+}
+
+/* 左側導航列表 */
+.nav-left {
+    margin-left: 2vw;
+    /* 增加與 LOGO 的距離 */
+}
+.nav-left ul {
+    display: flex;
+    gap: 1.5vw; /* 左側項目之間的間距 */
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* 右側導航列表 */
+.nav-right ul {
+    display: flex;
+    gap: 1vw; /* 右側項目之間的間距 */
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* 每個導航項目 */
+nav ul li {
+    margin: 0;
+    /* 項目之間間距統一由 gap 控制 */
+}
+
+/* 搜尋表單樣式 */
+.nav-right form {
+    display: flex;
+    /* 使用 Flexbox 排版 */
+    align-items: center;
+    /* 垂直居中 */
+}
+
+/* 搜尋框 */
+.nav-right form input[type="text"] {
+    padding: 0;
+    border: 0.1em solid #ccc;
+    /* 邊框，換成相對單位 */
+    border-radius: 0.3em;
+    /* 圓角，換成相對單位 */
+    width: 15vw;
+    /* 設置寬度為視窗寬度的 15% */
+    max-width: 300px;
+    /* 設置最大寬度以避免在大螢幕上過大 */
+}
+
+/* 漢堡按鈕樣式 */
+.menu-toggle {
+    display: none;
+    /* 默認隱藏 */
+    background: none;
+    border: none;
+    font-size: 2rem;
+    cursor: pointer;
+    margin-left: 2vw;
+        /* 增加與 LOGO 的距離 */
+}
+
+/* 響應式設計 */
+@media (max-width: 768px) {
+    /* 隱藏左側導航項目，改為漢堡菜單 */
+    .nav-left ul {
+        display: none;
+        /* 預設隱藏 */
+        flex-direction: column;
+        /* 改為縱向排版 */
+        position: absolute;
+        top: 100%;
+        /* 與父元素完全對齊 */
+        left: 0;
+        background-color: #fff;
+        width: 100%;
+        /* 寬度佔滿整個父元素寬度 */
+        box-shadow: 0 0.2vh 0.5vh rgba(0, 0, 0, 0.1);
+        /* 陰影改為 vh 單位 */
+        z-index: 1000;
+        /* 確保層級最高 */
+        padding: 2vh 2vw;
+        /* 添加內邊距，使用比例單位 */
+    }
+
+    /* 當 menu-toggle 被激活時顯示 */
+    .nav-left ul.active {
+        display: flex;
+    }
+
+    /* 顯示漢堡按鈕 */
+    .menu-toggle {
+        display: block;
+    }
+
+    /* 調整右側導航的間距 */
+    .nav-right ul {
+        gap: 2vw;
+    }
+}
+
+
+body {
+    padding-top: 10vh;
+    /* 這個值應該是您 header 的高度 */
+}
+
+/* 廣告區 *//* 廣告區 *//* 廣告區 *//* 廣告區 *//* 廣告區 */
+
+.advertisement {
+    margin-top: 0; /* 不需要額外的 top margin */
+}
+
+.carousel-item img {
+    width: 100%;
+    /* 設置圖片寬度為 100%，使其充滿容器 */
+    height: auto;
+    /* 設定固定高度，根據需要調整 */
+    max-height: 85vh;
+    min-height: 60vh;
+    /* 設定最大高度，防止圖片過大 */
+    object-fit: contain;
+    /* 保持圖片的比例，同時裁剪多餘部分填滿容器 */
+    object-position: center;
+    /* 保持圖片居中 */
+}
+
+/* 推薦商品區 *//* 推薦商品區 *//* 推薦商品區 *//* 推薦商品區 *//* 推薦商品區 */
+
+.recommendations {
+    margin-top: 10vh; /* 如果需要推薦商品區和廣告輪轉區有間隔 */
+}
+
+@media (max-width: 768px) {
+    .recommendations {
+        margin-top: 5vh; /* 小屏幕上的間距 */
+    }
+}

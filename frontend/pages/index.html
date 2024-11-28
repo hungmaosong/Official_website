@@ -3,12 +3,165 @@
 <html lang="zh-TW"> 
     <head>
         <meta charset="UTF-8">
-        <meta name=""viewport content="width=device-width, initial-scale=1.0">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>KCG君王卡牌研究室</title>
+        <link rel="icon" href="../assets/images/logo.ico" type="image/x-icon">
+        <link rel="stylesheet" href="../styles/main.css"> <!--連結 CSS 檔案到 HTML-->
+        <!-- Bootstrap CSS -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+        
+        <!-- Bootstrap JS -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
     </head>
 
     <body>
         <!-- 網站懸浮主頁條 -->
-         
+        <header>
+            <div class="logo">
+                <a href="#">
+                    <img src="..\assets\images\logo.png" alt="網站首頁">
+                </a>
+            </div>
+            <nav>
+                <!-- 漢堡按鈕 -->
+                <button class="menu-toggle" aria-label="切換導航"> <!--手機版網站收合用-->
+                    ☰
+                </button>
+
+                <!-- 靠左 -->
+                <div class="nav-left">
+                    <ul>
+                        <li><a href="#">景品</a></li>
+                        <li><a href="#">卡片</a></li>
+                        <li><a href="#">衣服</a></li>
+                        <li><a href="#">樂器</a></li>
+                        <li><a href="#">其他</a></li>
+                    </ul>
+                </div>
+
+                <!-- 靠右 -->
+                <div class="nav-right">
+                    <ul>
+                        <li>
+                            <form action="/search" method="get">
+                                <input type="text" name="q" placeholder="搜尋商品...">
+                            </form>
+                        </li>
+                        <li><a href="#">購物車</a></li>
+                        <li><a href="#">登入</a></li>
+                        <li><a href="#">聯絡我們</a></li>
+                    </ul>
+                </div>
+            </nav>
+        </header>
+
+        <!-- 廣告區 -->
+        <section class="advertisement">
+            <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
+                <!-- 這是輪播的指示器，根據圖片數量自動生成 -->
+                <div class="carousel-indicators">
+                    <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active"
+                        aria-current="true" aria-label="Slide 1"></button>
+                    <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1"
+                        aria-label="Slide 2"></button>
+                    <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2"
+                        aria-label="Slide 3"></button>
+                    <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="3"
+                        aria-label="Slide 4"></button>
+                    <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="4"
+                        aria-label="Slide 5"></button>
+                </div>
+
+                <!-- 輪播內部的圖片 -->
+                <div class="carousel-inner">
+                    <div class="carousel-item active">
+                        <img src="../assets/images/test (1).jpg" class="d-block w-100" alt="廣告1">
+                    </div>
+                    <div class="carousel-item">
+                        <img src="../assets/images/test (2).jpg" class="d-block w-100" alt="廣告2">
+                    </div>
+                    <div class="carousel-item">
+                        <img src="../assets/images/test (3).jpg" class="d-block w-100" alt="廣告3">
+                    </div>
+                    <div class="carousel-item">
+                        <img src="../assets/images/test (4).jpg" class="d-block w-100" alt="廣告4">
+                    </div>
+                    <div class="carousel-item">
+                        <img src="../assets/images/test (5).jpg" class="d-block w-100" alt="廣告5">
+                    </div>
+                </div>
+
+                <!-- 上一張和下一張的控制按鈕 -->
+                <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators"
+                    data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">上一張</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators"
+                    data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">下一張</span>
+                </button>
+            </div>
+        </section>
+
+
+        <!-- 推薦商品區 -->
+        <section class="recommendations">
+            <div class="container overflow-hidden">
+                <div class="row g-2">
+                    <!-- 左上：推薦商品區1 -->
+                    <div class="col-12 col-md-6 order-1">
+                        <div class="p-3 border bg-light">
+                            <h3>推薦商品區1</h3>
+                            <p>這裡是推薦商品區1的描述。</p>
+                        </div>
+                    </div>
+        
+                    <!-- 右上：推薦商品區2 -->
+                    <div class="col-12 col-md-6 order-3 order-md-2">
+                        <div class="p-3 border bg-light">
+                            <h3>推薦商品區2</h3>
+                            <p>這裡是推薦商品區2的描述。</p>
+                        </div>
+                    </div>
+        
+                    <!-- 左下：景品與卡片排行榜 -->
+                    <div class="col-12 col-md-6 order-2 order-md-3">
+                        <div class="p-3 border bg-light">
+                            <h3>景品與卡片排行榜</h3>
+                            <ul>
+                                <li>景品銷售前 1 名</li>
+                                <li>景品銷售前 2 名</li>
+                                <li>景品銷售前 3 名</li>
+                                <li>卡片銷售前 1 名</li>
+                                <li>卡片銷售前 2 名</li>
+                                <li>卡片銷售前 3 名</li>
+                            </ul>
+                        </div>
+                    </div>
+        
+                    <!-- 右下：衣服與樂器排行榜 -->
+                    <div class="col-12 col-md-6 order-4">
+                        <div class="p-3 border bg-light">
+                            <h3>衣服與樂器排行榜</h3>
+                            <ul>
+                                <li>衣服銷售前 1 名</li>
+                                <li>衣服銷售前 2 名</li>
+                                <li>衣服銷售前 3 名</li>
+                                <li>樂器銷售前 1 名</li>
+                                <li>樂器銷售前 2 名</li>
+                                <li>樂器銷售前 3 名</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+
+        <script src="../scripts/script.js"></script>
     </body>
 </html>
