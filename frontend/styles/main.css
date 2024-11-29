@@ -43,6 +43,31 @@ header .logo img {
     /* 保持圖片比例 */
 }
 
+/* 預設狀態，移除底線並設定基礎樣式 */
+header nav a {
+    text-decoration: none;
+    color: #000;
+    /* 文字顏色 */
+    display: inline-block;
+    /* 確保有可調整的方框 */
+    padding: 0.5em 1em;
+    /* 使用相對單位，讓按鈕隨字體比例調整 */
+    background-color: transparent;
+    /* 預設背景色透明 */
+    border-radius: 0.3em;
+    /* 圓角效果，使用相對單位 */
+    transition: background-color 0.3s ease, color 0.3s ease;
+    /* 平滑過渡效果 */
+}
+
+/* 滑鼠移入時改變方框背景色 */
+header nav a:hover {
+    background-color: #f0f0f0;
+    /* 替換為你想要的底色 */
+    color: #000;
+    /* 保持文字顏色一致或調整 */
+}
+
 /* 導航菜單樣式 */
 nav {
     display: flex;
@@ -56,9 +81,34 @@ nav {
     margin-left: 2vw;
     /* 增加與 LOGO 的距離 */
 }
+
+/* 搜尋表單樣式 */
+.nav-left form {
+    display: flex;
+    /* 使用 Flexbox 排版 */
+    align-items: center;
+    /* 垂直居中 */
+}
+
+/* 搜尋框 */
+.nav-left form input[type="text"] {
+    height: 2.5em;
+    /* 確保搜尋框的高度與按鈕一致 */
+    padding: 0.5em;
+    /* 內邊距適中 */
+    border: 0.1em solid #ccc;
+    /* 邊框，換成相對單位 */
+    border-radius: 0.3em;
+    /* 圓角，換成相對單位 */
+    width: 15vw;
+    /* 設置寬度為視窗寬度的 15% */
+    max-width: 300px;
+    /* 設置最大寬度以避免在大螢幕上過大 */
+}
+
 .nav-left ul {
     display: flex;
-    gap: 1.5vw; /* 左側項目之間的間距 */
+    gap: 0; /* 左側項目之間的間距 */
     list-style: none;
     padding: 0;
     margin: 0;
@@ -68,7 +118,7 @@ nav {
 /* 右側導航列表 */
 .nav-right ul {
     display: flex;
-    gap: 1vw; /* 右側項目之間的間距 */
+    gap: 0; /* 右側項目之間的間距 */
     list-style: none;
     padding: 0;
     margin: 0;
@@ -78,27 +128,6 @@ nav {
 nav ul li {
     margin: 0;
     /* 項目之間間距統一由 gap 控制 */
-}
-
-/* 搜尋表單樣式 */
-.nav-right form {
-    display: flex;
-    /* 使用 Flexbox 排版 */
-    align-items: center;
-    /* 垂直居中 */
-}
-
-/* 搜尋框 */
-.nav-right form input[type="text"] {
-    padding: 0;
-    border: 0.1em solid #ccc;
-    /* 邊框，換成相對單位 */
-    border-radius: 0.3em;
-    /* 圓角，換成相對單位 */
-    width: 15vw;
-    /* 設置寬度為視窗寬度的 15% */
-    max-width: 300px;
-    /* 設置最大寬度以避免在大螢幕上過大 */
 }
 
 /* 漢堡按鈕樣式 */
@@ -115,30 +144,58 @@ nav ul li {
 
 /* 響應式設計 */
 @media (max-width: 768px) {
-    /* 隱藏左側導航項目，改為漢堡菜單 */
+
+    /* 左側導航切換 */
     .nav-left ul {
         display: none;
-        /* 預設隱藏 */
         flex-direction: column;
-        /* 改為縱向排版 */
         position: absolute;
         top: 100%;
-        /* 與父元素完全對齊 */
         left: 0;
         background-color: #fff;
         width: 100%;
-        /* 寬度佔滿整個父元素寬度 */
         box-shadow: 0 0.2vh 0.5vh rgba(0, 0, 0, 0.1);
-        /* 陰影改為 vh 單位 */
         z-index: 1000;
-        /* 確保層級最高 */
         padding: 2vh 2vw;
-        /* 添加內邊距，使用比例單位 */
     }
 
-    /* 當 menu-toggle 被激活時顯示 */
     .nav-left ul.active {
         display: flex;
+    }
+    
+    header nav a {
+        text-decoration: none;
+        color: #000;
+        /* 文字顏色 */
+        display: inline-block;
+        /* 確保有可調整的方框 */
+        padding: 0.5em 1em;
+        /* 使用相對單位，讓按鈕隨字體比例調整 */
+        background-color: transparent;
+        /* 預設背景色透明 */
+        border-radius: 0.3em;
+        /* 圓角效果，使用相對單位 */
+        transition: background-color 0.3s ease, color 0.3s ease;
+        /* 平滑過渡效果 */
+        width: 100%;
+    }
+
+    /* 將搜尋框放入左側導航的最下面 */
+    .nav-left ul .search-wrapper {
+        margin-top: 2vh;
+        width: 100vw;
+        display: flex;
+        justify-content: center;
+        /* 水平置中 */
+    }
+
+    .nav-left ul .search-wrapper input[type="text"] {
+        width: 100%;
+        height: 2.5em;
+        padding: 0.5em;
+        border: 0.1em solid #ccc;
+        border-radius: 0.3em;
+        box-sizing: border-box;
     }
 
     /* 顯示漢堡按鈕 */
@@ -146,12 +203,29 @@ nav ul li {
         display: block;
     }
 
-    /* 調整右側導航的間距 */
+    /* 調整右側導航的按鈕 */
     .nav-right ul {
-        gap: 2vw;
+        display: flex;
+        align-items: center;
+        gap: 1vw;
+        justify-content: flex-end;
+    }
+
+    .nav-right ul li {
+        list-style: none;
+    }
+
+    .nav-right ul a {
+        text-decoration: none;
+        font-size: 1em;
+        color: #000;
+    }
+
+    /* LOGO 縮小 */
+    .logo img {
+        height: 7vh;
     }
 }
-
 
 body {
     padding-top: 10vh;
