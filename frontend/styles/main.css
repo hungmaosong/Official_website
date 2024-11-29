@@ -23,7 +23,7 @@ header {
     /* 左中右分佈 */
     align-items: center;
     /* 垂直居中 */
-    background-color: #fff;
+    background-color: #909090;
     /* 背景顏色，方便視覺清晰 */
     padding: 1vh 2vw;
     /* 增加內邊距 */
@@ -31,6 +31,8 @@ header {
     /* 增加陰影效果 */
     z-index: 1000;
     /* 確保 header 層級最高 */
+
+    font-weight: 900;
 }
 
 /* Logo 區域 */
@@ -62,10 +64,10 @@ header nav a {
 
 /* 滑鼠移入時改變方框背景色 */
 header nav a:hover {
-    background-color: #f0f0f0;
+    background-color: #333;
     /* 替換為你想要的底色 */
-    color: #000;
-    /* 保持文字顏色一致或調整 */
+    color: #fff; 
+    /* 文字顏色 */
 }
 
 /* 導航菜單樣式 */
@@ -152,7 +154,7 @@ nav ul li {
         position: absolute;
         top: 100%;
         left: 0;
-        background-color: #fff;
+        background-color: hsl(0, 0%, 75%);
         width: 100%;
         box-shadow: 0 0.2vh 0.5vh rgba(0, 0, 0, 0.1);
         z-index: 1000;
@@ -230,12 +232,14 @@ nav ul li {
 body {
     padding-top: 10vh;
     /* 這個值應該是您 header 的高度 */
+    background-color: bisque;
 }
 
 /* 廣告區 *//* 廣告區 *//* 廣告區 *//* 廣告區 *//* 廣告區 */
 
 .advertisement {
     margin-top: 0; /* 不需要額外的 top margin */
+    background-color: bisque;
 }
 
 .carousel-item img {
@@ -252,15 +256,84 @@ body {
     /* 保持圖片居中 */
 }
 
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+    background-color: #909090;
+    /* 設置背景色為半透明黑色 */
+    border-radius: 10%;
+    /* 圓形背景 */
+    width: 5rem;
+    /* 調整按鈕寬度 */
+    height: 3rem;
+    /* 調整按鈕高度 */
+}
+
+.carousel-control-prev-icon:hover,
+.carousel-control-next-icon:hover {
+    background-color: #333;
+    /* 滑鼠移入時背景色變暗 */
+}
+
 /* 推薦商品區 *//* 推薦商品區 *//* 推薦商品區 *//* 推薦商品區 *//* 推薦商品區 */
 
 .recommendations {
-    margin-top: 10vh; /* 如果需要推薦商品區和廣告輪轉區有間隔 */
+    padding-top: 10vh; /* 如果需要推薦商品區和廣告輪轉區有間隔 */
     text-align: center;
+    background-color: bisque;
+}
+
+/* 左上區塊樣式 */
+.recommendations .col-12:nth-child(1) .border {
+    border: 2px solid #FF7F50 !important;
+    /* 珊瑚橘色邊框 */
+    background-color: #FFF5EE !important;
+    /* 柔和的米白色背景 */
+    border-radius: 10px;
+    /* 圓角設計 */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    /* 陰影效果 */
+    color: #FF8800;
+}
+
+/* 右上區塊樣式 */
+.recommendations .col-12:nth-child(2) .border {
+    border: 2px solid #4682B4 !important;
+    /* 鋼藍色邊框 */
+    background-color: #F0F8FF !important;
+    /* 愛麗絲藍色背景 */
+    border-radius: 10px;
+    /* 圓角設計 */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    /* 陰影效果 */
+    color: blue;
+}
+
+/* 左下區塊樣式 */
+.recommendations .col-12:nth-child(3) .border {
+    border: 2px solid #FF7F50 !important;
+    /* 珊瑚橘色邊框 */
+    background-color: #FFF5EE !important;
+    /* 柔和的米白色背景 */
+    border-radius: 10px;
+    /* 圓角設計 */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    /* 陰影效果 */
+}
+
+/* 右下區塊樣式 */
+.recommendations .col-12:nth-child(4) .border {
+    border: 2px solid #4682B4 !important;
+    /* 鋼藍色邊框 */
+    background-color: #F0F8FF !important;
+    /* 愛麗絲藍色背景 */
+    border-radius: 10px;
+    /* 圓角設計 */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    /* 陰影效果 */
 }
 
 @media (max-width: 768px) {
     .recommendations {
-        margin-top: 5vh; /* 小屏幕上的間距 */
+        padding-top: 5vh; /* 小屏幕上的間距 */
     }
 }
