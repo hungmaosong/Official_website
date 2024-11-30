@@ -232,7 +232,7 @@ nav ul li {
 body {
     padding-top: 10vh;
     /* 這個值應該是您 header 的高度 */
-    background-color: bisque;
+    background-color: bisque !important;
 }
 
 /* 廣告區 *//* 廣告區 *//* 廣告區 *//* 廣告區 *//* 廣告區 */
@@ -292,6 +292,15 @@ body {
     /* 圓角設計 */
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     /* 陰影效果 */
+}
+
+/* 針對標題進行單獨調整 */
+.recommendations .col-12.order-1 .p-3 h3 {
+    font-family: 'Georgia', serif !important;
+    /* 設定標題為 Georgia 字體 */
+    font-size: 2em;
+    /* 放大標題字體 */
+    font-weight: bolder !important;
     color: #FF8800;
 }
 
@@ -305,6 +314,15 @@ body {
     /* 圓角設計 */
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     /* 陰影效果 */
+}
+
+/* 針對標題進行單獨調整 */
+.recommendations .col-12.order-md-2 .p-3 h3 {
+    font-family: 'Georgia', serif !important;
+    /* 設定標題為 Georgia 字體 */
+    font-size: 2em;
+    /* 放大標題字體 */
+    font-weight: bolder !important;
     color: blue;
 }
 
