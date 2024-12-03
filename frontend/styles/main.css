@@ -400,3 +400,62 @@ body {
         grid-template-columns: 1fr;
     }
 }
+
+/*登入*//*登入*//*登入*//*登入*//*登入*/
+
+#login_block {
+    padding-top: 10vh;
+    /* 距離頂部的間距 */
+    overflow-x: hidden;
+}
+
+#login_block .card {
+    border: 0.2em solid #FF7F00;
+    /* 螢光橘邊框 */
+    border-radius: 10px;
+    /* 圓角設計 */
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    /* 增加輕微陰影效果 */
+}
+
+/* 登入格上方底色 */
+#login_block .card-header { 
+    background-color: #FF8800;
+    border: 0.2em solid #FF7F00;
+    /* 螢光橘邊框 */
+}
+
+/* 登入字體 */
+#login_block .card-header h4 {
+    color: #fff;
+    font-size: xx-large;
+    font-weight: bolder;
+}
+
+/* 登入格下方底色 */
+#login_block .card-body {
+    background-color: #FFA07A
+}
+
+/* 登入格下方字體 */
+#login_block .card-body h6 {
+    color: #fff;
+    font-size: large;
+    font-weight: bolder;
+}
+
+/* 登入格下方按鈕字體 */
+#login_block .card-body button{
+    color: #fff;
+    font-size: large;
+    font-weight: bolder;
+}
+
+/* 購物車 *//* 購物車 *//* 購物車 *//* 購物車 *//* 購物車 */
+
+/* 購物車標題字體 */
+#cart_block h2 {
+    color: black;
+    font-size: xx-large;
+    font-weight: bolder;
+}
