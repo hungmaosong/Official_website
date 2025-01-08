@@ -459,3 +459,50 @@ body {
     font-size: xx-large;
     font-weight: bolder;
 }
+
+/* 商品 *//* 商品 *//* 商品 *//* 商品 *//* 商品 */
+
+#products_block .card img {
+    height: 30vh;
+    object-fit: cover;
+}
+
+#products_block .card-body {
+    padding: 0.5rem;
+}
+
+/* 讓按鈕保持上下排列 */
+.card-body .btn-group {
+    display: flex;
+    flex-direction: column;
+    /* 保證按鈕上下排列 */
+    align-items: center;
+    /* 讓按鈕居中 */
+}
+
+.card-body .btn-group .btn {
+    margin-bottom: 10vh;
+    /* 按鈕間距 */
+    border-radius: 5px !important;
+    /* 圓角設定，數值可調整 */
+}
+
+/* 最後一個按鈕不需要底部間距 */
+.card-body .btn-group .btn:last-child {
+    margin-bottom: 0;
+}
+
+#prev-page, 
+#next-page {
+    background-color: #909090;
+    color: #000;
+    font-weight: bolder;
+}
+
+#prev-page:hover,
+#next-page:hover {
+    background-color: #333;
+    /* 滑鼠移入時背景色變暗 */
+    font-weight: bolder;
+    color: #fff;
+}
