@@ -88,6 +88,26 @@ header {
     z-index: 1000;
 }
 
+/* =========================================
+   導覽列背景統一修正 (Fix Header Background)
+   ========================================= */
+header {
+    /* 強制使用深色背景，不依賴透明度 */
+    background-color: #1e202b !important;
+    /* 這是你網站的主深色背景 */
+
+    /* 如果原本有 backdrop-filter (磨砂效果)，可以先拿掉，避免顏色被底下干擾 */
+    backdrop-filter: none !important;
+
+    /* 確保有底部邊框，增加層次感 */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* 如果你的導覽列有 .scrolled 類別 (捲動時變色)，也要一併修正 */
+header.scrolled {
+    background-color: #1e202b !important;
+}
+
 /* Logo */
 header .logo img {
     height: 45px;

@@ -1,22 +1,16 @@
 // js/layout.js
 
 function loadHeader() {
-    // 判斷目前層級，如果在 pages 資料夾內，圖片路徑需要多一個 "../"
-    // 這是一個簡單的判斷，確保 logo 不會破圖
+    // 1. 判斷路徑邏輯 (保留你的原創邏輯)
     const isInnerPage = window.location.pathname.includes('/pages/');
-    const pathPrefix = isInnerPage ? '../' : './';
-    const linkPrefix = isInnerPage ? '' : 'pages/'; 
-    // 如果在首頁(外層)，連結要去 pages/products.html
-    // 如果在內頁，連結直接去 products.html
-    
-    // 這裡我們修正邏輯：
-    // 假設 index.html 在根目錄，其他在 pages/
-    // 圖片：根目錄用 ./assets，內頁用 ../assets
-    // 連結：根目錄去 pages/xxx.html，內頁去 xxx.html (首頁連結要特別處理)
-
     const imgPath = isInnerPage ? '../assets/images/' : './assets/images/';
     
-    // 定義導覽列 HTML
+    // 定義商品頁的路徑變數，方便下面重複使用
+    // 如果在內頁 -> products.html
+    // 如果在首頁 -> pages/products.html
+    const productLink = isInnerPage ? 'products.html' : 'pages/products.html';
+
+    // 2. 定義 HTML (完全保留你的結構)
     const headerHTML = `
     <header>
         <div class="logo">
@@ -29,11 +23,12 @@ function loadHeader() {
             
             <div class="nav-left">
                 <ul>
-                    <li><a href="${isInnerPage ? 'products.html' : 'pages/products.html'}">景品</a></li>
-                    <li><a href="${isInnerPage ? 'products.html' : 'pages/products.html'}">卡片</a></li>
-                    <li><a href="${isInnerPage ? 'products.html' : 'pages/products.html'}">衣服</a></li>
-                    <li><a href="${isInnerPage ? 'products.html' : 'pages/products.html'}">樂器</a></li>
-                    <li><a href="${isInnerPage ? 'products.html' : 'pages/products.html'}">其他</a></li>
+                    <li><a href="${productLink}?category=figure">景品</a></li>
+                    <li><a href="${productLink}?category=card">卡片</a></li>
+                    <li><a href="${productLink}?category=clothes">衣服</a></li>
+                    <li><a href="${productLink}?category=music">樂器</a></li>
+                    <li><a href="${productLink}?category=other">其他</a></li>
+                    
                     <li class="search-wrapper">
                         <form id="search-form">
                             <input type="text" placeholder="搜尋商品...">
@@ -53,18 +48,23 @@ function loadHeader() {
     </header>
     `;
 
-    // 插入到網頁最上方
+    // 3. 插入到網頁
     document.body.insertAdjacentHTML('afterbegin', headerHTML);
 
-    // 重新綁定漢堡選單的事件 (因為 HTML 是後來才生出來的，必須在這裡綁定)
+    // 4. 綁定漢堡選單 (保留你的 JS)
     const menuToggle = document.querySelector('.menu-toggle');
-    const navLeft = document.querySelector('.nav-left ul');
+    const navLeft = document.querySelector('.nav-left ul'); // 注意：你的 CSS 可能是控制 ul 的顯示
+    
     if(menuToggle && navLeft){
         menuToggle.addEventListener('click', () => {
-            navLeft.classList.toggle('active');
+            // 這裡假設你的 CSS 是寫 .nav-left ul.active 或 .nav-left.active
+            // 根據你的原始代碼，通常是切換 active class
+            navLeft.classList.toggle('active'); 
+            
+            // 如果你的 CSS 是寫在 .nav-left 上，請改用下面這行：
+            // document.querySelector('.nav-left').classList.toggle('active');
         });
     }
 }
 
-// 當網頁載入完成後，執行 loadHeader
 document.addEventListener('DOMContentLoaded', loadHeader);

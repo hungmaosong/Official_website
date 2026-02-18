@@ -13,59 +13,105 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // ==========================================
-    // 2. 商品列表渲染功能 (裝備庫核心)
+   // ==========================================
+    // 2. 商品列表渲染功能 (含分類篩選)
     // ==========================================
     const productsContainer = document.getElementById("products-container");
     
     if (productsContainer) {
         
-        // 確保 data.js 有正確載入
         if (typeof productsData === 'undefined') {
-            console.error("錯誤：找不到 productsData，請確認 data.js 是否有在 main.js 之前載入。");
-            productsContainer.innerHTML = '<p class="text-white text-center">無法讀取商品資料 (Data Error)</p>';
+            productsContainer.innerHTML = '<p class="text-white text-center">Data Error</p>';
             return;
         }
 
-        const itemsPerPage = 8; // 設定一頁顯示 8 個商品
+        // --- 1. 取得網址上的分類參數 ---
+        const urlParams = new URLSearchParams(window.location.search);
+        const currentCategory = urlParams.get('category'); // 例如 'figure', 'card'...
+
+        // --- 2. 篩選資料 ---
+        let filteredProducts = productsData;
+        let categoryTitle = "全部商品 ALL PRODUCTS";
+
+        // 定義分類名稱對照表 (用來顯示標題)
+        const categoryMap = {
+            'figure': '景品模型 FIGURE',
+            'card': '稀有卡片 CARD',
+            'clothes': '潮流服飾 APPAREL',
+            'music': '音樂周邊 MUSIC GEAR',
+            'other': '其他配件 OTHERS'
+        };
+
+        if (currentCategory && currentCategory !== 'all') {
+            // 過濾陣列
+            filteredProducts = productsData.filter(p => p.category === currentCategory);
+            
+            // 更新標題變數
+            if (categoryMap[currentCategory]) {
+                categoryTitle = categoryMap[currentCategory];
+            }
+        }
+
+        // --- 3. 更新頁面標題 (UX 優化) ---
+        const pageTitleElement = document.querySelector('.section-title');
+        if (pageTitleElement) {
+            // 把原本的 "商品 PRODUCTS" 換成 "景品模型 FIGURE"
+            // 分割中英文，加上樣式
+            const parts = categoryTitle.split(' ');
+            if (parts.length >= 2) {
+                 pageTitleElement.innerHTML = `${parts[0]} <span class="highlight">${parts.slice(1).join(' ')}</span>`;
+            } else {
+                 pageTitleElement.innerText = categoryTitle;
+            }
+        }
+
+        // --- 4. 渲染邏輯 (使用 filteredProducts 而不是 productsData) ---
+        const itemsPerPage = 8;
         let currentPage = 1;
 
-        // --- 核心函式：畫出商品 (Tech Style) ---
         function renderProducts(page) {
-            productsContainer.innerHTML = ""; // 先清空畫面
+            productsContainer.innerHTML = "";
             
             const startIndex = (page - 1) * itemsPerPage;
             const endIndex = startIndex + itemsPerPage;
-            const currentItems = productsData.slice(startIndex, endIndex);
+            // 注意：這裡改成用 filteredProducts
+            const currentItems = filteredProducts.slice(startIndex, endIndex);
 
             if(currentItems.length === 0) {
-                productsContainer.innerHTML = '<div class="col-12 text-center text-muted" style="color: #cbd5e1;">目前沒有庫存 / NO DATA</div>';
+                productsContainer.innerHTML = `
+                    <div class="col-12 text-center" style="padding: 50px;">
+                        <h3 class="text-muted" style="letter-spacing: 2px;">NO DATA FOUND</h3>
+                        <p style="color: #64748b;">此分類目前沒有庫存</p>
+                        <a href="products.html" class="btn btn-outline-light mt-3">返回全部商品</a>
+                    </div>`;
+                // 隱藏分頁按鈕
+                document.querySelector('.pagination-tech').style.display = 'none';
                 return;
+            } else {
+                // 有資料就顯示分頁按鈕
+                const pagination = document.querySelector('.pagination-tech');
+                if(pagination) pagination.style.display = 'flex';
             }
 
-            // 生成 HTML
+            // 生成卡片 HTML (跟之前一樣)
             currentItems.forEach(product => {
-                // 1. 判斷庫存狀態
+                // 判斷庫存
                 let stockHTML = '';
-                let btnState = ''; // 按鈕狀態 (是否禁用)
+                let btnState = '';
                 let btnText = '加入購物車';
                 let btnClass = 'btn-primary';
 
                 if (product.stock === 0) {
-                    // 缺貨狀態
                     stockHTML = `<span class="stock-badge out-of-stock">庫存不足 OUT OF STOCK</span>`;
                     btnState = 'disabled';
                     btnText = '補貨中...';
-                    btnClass = 'btn-secondary'; // 灰色按鈕
+                    btnClass = 'btn-secondary';
                 } else if (product.stock <= 5) {
-                    // 低庫存警示
                     stockHTML = `<span class="stock-badge low-stock">剩餘庫存: ${product.stock} (稀有!)</span>`;
                 } else {
-                    // 正常庫存
                     stockHTML = `<span class="stock-badge normal-stock">庫存充足: ${product.stock}</span>`;
                 }
 
-                // 2. 生成 HTML
                 const productHTML = `
                     <div class="col-12 col-md-6 col-lg-3">
                         <div class="tech-card h-100 d-flex flex-column">
@@ -73,31 +119,16 @@ document.addEventListener("DOMContentLoaded", () => {
                                 <img src="${product.image}" class="card-img-top" alt="${product.name}">
                                 <div class="img-overlay"></div>
                             </div>
-                            
                             <div class="card-body-tech d-flex flex-column flex-grow-1">
                                 <h5 class="card-title mb-1" style="color: #fff; font-weight: 600;">${product.name}</h5>
-                                
-                                <div class="price-tag mb-2" style="color: var(--accent);">
-                                    NT$${product.price}
-                                </div>
-                                
-                                <div class="mb-3">
-                                    ${stockHTML}
-                                </div>
-                                
+                                <div class="price-tag mb-2" style="color: var(--accent);">NT$${product.price}</div>
+                                <div class="mb-3">${stockHTML}</div>
                                 <div class="mt-auto d-grid gap-2">
                                     <button class="btn btn-outline-light btn-sm" style="border-radius: 50px;">查看詳情</button>
-                                    
-                                    <button class="btn ${btnClass} btn-sm add-to-cart" 
-                                        ${btnState}
-                                        data-id="${product.id}" 
-                                        data-name="${product.name}"
-                                        data-price="${product.price}"
-                                        data-image="${product.image}"
-                                        data-stock="${product.stock}"
-                                        style="border-radius: 50px; border:none;">
-                                        ${btnText}
-                                    </button>
+                                    <button class="btn ${btnClass} btn-sm add-to-cart" ${btnState}
+                                        data-id="${product.id}" data-name="${product.name}"
+                                        data-price="${product.price}" data-image="${product.image}" data-stock="${product.stock}"
+                                        style="border-radius: 50px; border:none;">${btnText}</button>
                                 </div>
                             </div>
                         </div>
@@ -109,7 +140,7 @@ document.addEventListener("DOMContentLoaded", () => {
             updatePaginationButtons();
         }
 
-        // --- 更新分頁按鈕狀態 ---
+        // 更新分頁按鈕 (依據篩選後的數量)
         function updatePaginationButtons() {
             const prevBtn = document.getElementById('prev-page');
             const nextBtn = document.getElementById('next-page');
@@ -117,33 +148,30 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if(prevBtn && nextBtn) {
                 prevBtn.disabled = currentPage === 1;
-                nextBtn.disabled = currentPage * itemsPerPage >= productsData.length;
-                if(pageInfo) pageInfo.innerText = `PAGE 0${currentPage}`; // 補零更有科技感
+                // 注意：這裡是用 filteredProducts.length
+                nextBtn.disabled = currentPage * itemsPerPage >= filteredProducts.length;
+                if(pageInfo) pageInfo.innerText = `PAGE 0${currentPage}`;
             }
         }
 
-        // --- 綁定分頁點擊事件 ---
+        // 綁定分頁點擊
         document.getElementById('prev-page')?.addEventListener('click', () => {
             if (currentPage > 1) {
                 currentPage--;
                 renderProducts(currentPage);
-
-                // 🔥 新增這行：平滑滾動到最上方
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
         });
 
         document.getElementById('next-page')?.addEventListener('click', () => {
-            if (currentPage * itemsPerPage < productsData.length) {
+            if (currentPage * itemsPerPage < filteredProducts.length) {
                 currentPage++;
                 renderProducts(currentPage);
-
-                // 🔥 新增這行：平滑滾動到最上方
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
         });
 
-        // 初次執行渲染
+        // 初次執行
         renderProducts(currentPage);
     }
 
