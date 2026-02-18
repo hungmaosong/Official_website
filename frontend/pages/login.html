@@ -4,87 +4,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KCG君王卡牌研究室 - 會員登入</title>
 
-    <title>KCG君王卡牌研究室</title>
     <link rel="icon" href="../assets/images/logo.ico" type="image/x-icon">
+    <link rel="stylesheet" href="../css/main.css">
 
-    <link rel="stylesheet" href="../styles/main.css"> <!--連結 CSS 檔案到 HTML-->
-    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-
 </head>
 
 <body>
-    <!-- 網站懸浮主頁條 -->
-    <header>
-        <div class="logo">
-            <a href="index.html">
-                <img src="..\assets\images\logo.png" alt="網站首頁">
-            </a>
-        </div>
-        <nav>
-            <!-- 漢堡按鈕 -->
-            <button class="menu-toggle" aria-label="切換導航"> <!--手機版網站收合用-->
-                ☰
-            </button>
-
-            <!-- 靠左 -->
-            <div class="nav-left">
-                <ul>
-                    <li><a href="products.html">景品</a></li>
-                    <li><a href="products.html">卡片</a></li>
-                    <li><a href="products.html">衣服</a></li>
-                    <li><a href="products.html">樂器</a></li>
-                    <li><a href="products.html">其他</a></li>
-                    <li class="search-wrapper">
-                        <form id="search-form">
-                            <input type="text" placeholder="搜尋商品...">
-                        </form>
-                    </li>
-                </ul>
-            </div>
-
-            <!-- 靠右 -->
-            <div class="nav-right">
-                <ul>
-                    <li><a href="cart.html">購物車</a></li>
-                    <li><a href="login.html">登入</a></li>
-                    <li><a href="contact_us.html">聯絡我們</a></li>
-                </ul>
-            </div>
-        </nav>
-    </header>
-
-    <section id="login_block">
-        <div class="row justify-content-center">
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header text-center">
-                        <h4>登入</h4>
-                    </div>
-                    <div class="card-body">
-                        <form>
-                            <div class="mb-3">
-                                <label for="username" class="form-label"><h6>帳號</h6></label>
-                                <input type="text" id="username" class="form-control" placeholder="請輸入帳號">
+    <section id="login_block" class="container-fluid">
+        <div class="login-container">
+            <div class="login-card">
+                <div class="login-header">
+                    <h4>SYSTEM ACCESS</h4>
+                    <p>會員身份驗證</p>
+                </div>
+                <div class="login-body">
+                    <form>
+                        <div class="mb-4 input-group-tech">
+                            <label for="username" class="form-label">帳號</label>
+                            <input type="text" id="username" class="form-control" placeholder="輸入您的帳號">
+                        </div>
+                        <div class="mb-4 input-group-tech">
+                            <label for="password" class="form-label">密碼</label>
+                            <div class="input-group">
+                                <input type="password" id="password" class="form-control" placeholder="輸入您的密碼">
+                        
+                                <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                                    👁️
+                                </button>
                             </div>
-                            <div class="mb-3">
-                                <label for="password" class="form-label"><h6>密碼</h6></label>
-                                <input type="password" id="password" class="form-control" placeholder="請輸入密碼">
+                        </div>
+                        <div class="mb-4 input-group-tech">
+                            <label for="captcha-input" class="form-label">驗證碼</label>
+                            <div class="captcha-wrapper">
+                                <input type="text" id="captcha-input" class="form-control" placeholder="輸入右側代碼" maxlength="4">
+                        
+                                <div class="captcha-display" id="captcha-code">Loading...</div>
+                        
+                                <button type="button" class="btn btn-icon" id="refresh-captcha" title="刷新代碼">
+                                    🔄
+                                </button>
                             </div>
-                            <div class="d-grid gap-2">
-                                <button type="submit" class="btn btn-primary">登入</button>
-                                <button type="button" class="btn btn-secondary">註冊</button>
-                            </div>
-                        </form>
-                    </div>
+                        </div>
+                        <div class="d-grid gap-3">
+                            <button type="submit" class="btn btn-primary btn-login">確認登入</button>
+                            <button type="button" class="btn btn-outline-secondary btn-register">註冊新身份</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
     </section>
 
-    <script src="../scripts/script.js"></script>
+    <script src="../js/layout.js"></script>
+    <script src="../js/main.js"></script>
 </body>
+
+</html>

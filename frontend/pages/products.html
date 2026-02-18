@@ -4,84 +4,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KCG君王卡牌研究室 - 裝備庫</title>
 
-    <title>KCG君王卡牌研究室</title>
     <link rel="icon" href="../assets/images/logo.ico" type="image/x-icon">
 
-    <link rel="stylesheet" href="../styles/main.css"> <!--連結 CSS 檔案到 HTML-->
-    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+    <link rel="stylesheet" href="../css/main.css">
 </head>
 
 <body>
-    <!-- 網站懸浮主頁條 -->
-    <header>
-        <div class="logo">
-            <a href="index.html">
-                <img src="..\assets\images\logo.png" alt="網站首頁">
-            </a>
+    <section class="container-fluid products-section">
+        <div class="container">
+            <div class="text-center mb-3">
+                <h2 class="section-title">商品 <span class="highlight">PRODUCTS</span></h2>
+            </div>
+
+            <div id="products-container" class="row g-4">
+            </div>
+
+            <div class="d-flex justify-content-center align-items-center mt-5 mb-5 gap-3 pagination-tech">
+                <button id="prev-page" class="btn btn-icon">❮</button>
+                <span id="page-info" class="page-number">PAGE 01</span>
+                <button id="next-page" class="btn btn-icon">❯</button>
+            </div>
         </div>
-        <nav>
-            <!-- 漢堡按鈕 -->
-            <button class="menu-toggle" aria-label="切換導航"> <!--手機版網站收合用-->
-                ☰
-            </button>
+    </section>
 
-            <!-- 靠左 -->
-            <div class="nav-left">
-                <ul>
-                    <li><a href="products.html">景品</a></li>
-                    <li><a href="products.html">卡片</a></li>
-                    <li><a href="products.html">衣服</a></li>
-                    <li><a href="products.html">樂器</a></li>
-                    <li><a href="products.html">其他</a></li>
-                    <li class="search-wrapper">
-                        <form id="search-form">
-                            <input type="text" placeholder="搜尋商品...">
-                        </form>
-                    </li>
-                </ul>
-            </div>
+    <div class="modal fade" id="cartModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content tech-modal">
+                <div class="modal-header border-bottom-0">
+                    <h5 class="modal-title tech-title">選擇商品</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
 
-            <!-- 靠右 -->
-            <div class="nav-right">
-                <ul>
-                    <li><a href="cart.html">購物車</a></li>
-                    <li><a href="login.html">登入</a></li>
-                    <li><a href="contact_us.html">聯絡我們</a></li>
-                </ul>
-            </div>
-        </nav>
-    </header>
+                <div class="modal-body">
+                    <div class="d-flex gap-4 align-items-start">
+                        <div class="modal-img-wrapper">
+                            <img id="modal-product-img" src="" alt="Product" class="img-fluid rounded">
+                        </div>
 
-<section id="products_block" class="container mt-4">
-    <div class="row">
-        <!-- 商品模板 -->
-        <div class="col-12 col-md-6 col-lg-2 mb-4" id="product-template" style="display: none;">
-            <div class="card h-100">
-                <img src="../assets/images/sample_product.jpg" class="card-img-top" alt="商品圖片">
-                <div class="card-body text-center">
-                    <h5 class="card-title">商品名稱</h5>
-                    <p class="card-text">NT$999</p>
-                    <!-- 商品按鈕，保持上下排列 -->
-                    <div class="d-flex flex-column justify-content-center btn-group" role="group">
-                        <a href="#" class="btn btn-primary mb-2">查看詳情</a>
-                        <button class="btn btn-success add-to-cart">加入購物車</button>
+                        <div class="w-100">
+                            <h4 id="modal-product-name" class="text-white mb-2" style="font-weight: 600;">商品名稱</h4>
+                            <div id="modal-product-price" class="tech-price mb-4">NT$0</div>
+
+                            <label class="form-label text-muted mb-2" style="font-size: 0.9rem;">數量 QUANTITY</label>
+                            <div class="input-group input-group-tech-modal">
+                                <button class="btn btn-outline-secondary" type="button" id="btn-minus">-</button>
+                                <input type="number" id="modal-quantity" class="form-control text-center" value="1"
+                                    min="1">
+                                <button class="btn btn-outline-secondary" type="button" id="btn-plus">+</button>
+                            </div>
+                        </div>
                     </div>
+                </div>
+
+                <div class="modal-footer border-top-0">
+                    <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">取消 ABORT</button>
+                    <button type="button" class="btn btn-primary btn-confirm-add" id="confirm-add-cart">
+                        確認加入 CONFIRM
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- 分頁控制 -->
-    <div class="d-flex justify-content-between mt-4">
-        <button id="prev-page" class="btn btn-secondary" disabled>上一頁</button>
-        <button id="next-page" class="btn btn-secondary">下一頁</button>
+    <div id="cart-toast" class="toast-tech">
+        <span style="font-size: 1.5rem;">🛒</span>
+        <div>
+            <h6 class="mb-0" style="font-weight: bold; color: var(--accent);">系統訊息</h6>
+            <p class="mb-0 text-white" id="toast-message">商品已加入購物車</p>
+        </div>
     </div>
-</section>
 
-    <script src="../scripts/script.js"></script>
+    <script src="../js/layout.js"></script>
+    <script src="../js/data.js"></script>
+    <script src="../js/main.js"></script>
 </body>
+
+</html>
