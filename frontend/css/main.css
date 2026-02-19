@@ -222,107 +222,6 @@ header nav a.active {
 }
 
 /* =========================================
-   RWD 手機版設定 (小於 768px 時才生效)
-   ========================================= */
-/* =========================================
-   RWD 手機版完整設定 (修正版)
-   ========================================= */
-@media (max-width: 768px) {
-    header {
-        padding: 0 20px;
-    }
-
-    /* 1. 漢堡按鈕出現 */
-    .menu-toggle {
-        display: block;
-    }
-
-    /* 2. 隱藏原本的橫排選單 */
-    .nav-left ul,
-    .nav-right ul {
-        display: none;
-        /* 預設不顯示，等 JS 加 active class */
-    }
-
-    /* 3. 選單展開後的容器樣式 */
-    .nav-left ul.active,
-    .nav-right ul.active {
-        display: flex;
-        flex-direction: column;
-        position: absolute;
-        top: 80px;
-        left: 0;
-        width: 100%;
-        background: rgba(15, 23, 42, 0.95);
-        /* 深色背景 */
-        backdrop-filter: blur(15px);
-        /* 磨砂感 */
-        padding: 20px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        align-items: center;
-        gap: 15px;
-        /* 按鈕間距 */
-        z-index: 999;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-    }
-
-    /* 修正左側選單的外距 */
-    .nav-left {
-        margin: 0;
-    }
-
-    /* 4. 手機版按鈕樣式 (整條可按) */
-    .nav-left ul li,
-    .nav-right ul li {
-        width: 100%;
-        text-align: center;
-    }
-
-    header nav a {
-        display: block;
-        width: 100%;
-        padding: 15px 0;
-        /* 加大點擊範圍 */
-        border-radius: 8px;
-        font-size: 1.1rem;
-        border: 1px solid transparent;
-        background: transparent;
-        transition: all 0.2s ease;
-        color: #cbd5e1;
-        /* 預設文字顏色 */
-    }
-
-    /* 🔥 5. 手機版按鈕特效 (Hover & Active) */
-    /* 這裡同時設定 hover (滑過) 和 active (按下) */
-    header nav a:hover,
-    header nav a:active {
-        background-color: rgba(6, 182, 212, 0.15) !important;
-        /* 霓虹青色背景 */
-        color: #fff !important;
-        border-color: rgba(6, 182, 212, 0.5) !important;
-        /* 青色邊框 */
-        box-shadow: 0 0 15px rgba(6, 182, 212, 0.3);
-        /* 發光 */
-        transform: scale(0.98);
-        /* 按下去縮小，產生按壓感 */
-    }
-
-    /* 6. 搜尋框滿版 */
-    .search-wrapper {
-        width: 100%;
-        margin-top: 10px;
-        display: flex;
-        justify-content: center;
-    }
-
-    .search-wrapper input[type="text"] {
-        width: 90%;
-        height: 45px;
-    }
-}
-
-
-/* =========================================
    3. Hero Section (輪播廣告區)
    ========================================= */
 .hero-section {
@@ -1383,65 +1282,190 @@ header nav a.active {
     color: #fff;
 }
 
-/* RWD 調整 */
-@media (max-width: 768px) {
-    #contact_grid {
-        grid-template-columns: 1fr;
-        /* 手機版變單欄，更好點 */
+
+/* =========================================
+   8. RWD 響應式修正 (手機與平板單一下拉選單)
+   ========================================= */
+@media (max-width: 1500px) {
+
+    /* 1. 頂部導覽列：Logo在左，漢堡在右 */
+    header {
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        padding: 0 20px !important;
     }
 
-    .page-title {
-        font-size: 1.8rem;
+    /* 漢堡按鈕顯現，並在右上角 */
+    .menu-toggle {
+        display: block !important;
+        font-size: 2rem !important;
+        color: var(--accent) !important;
+    }
+
+    /* 隱藏原本的 nav-left / nav-right 橫向排版限制 */
+    .nav-left,
+    .nav-right {
+        display: block !important;
+        width: 100% !important;
+        margin: 0 !important;
+    }
+
+    /* 核心：整合後的單一選單抽屜 (.nav-menu) */
+    .nav-menu {
+        position: fixed !important;
+        top: 80px !important;
+        /* 接在 Header 底部 */
+        left: 0 !important;
+        width: 100% !important;
+        height: calc(100vh - 80px) !important;
+        background: rgba(15, 23, 42, 0.98) !important;
+        display: none !important;
+        /* 預設隱藏 */
+        flex-direction: column !important;
+        justify-content: flex-start !important;
+        padding: 20px 0 80px 0 !important;
+        overflow-y: auto !important;
+        /* 項目多可滑動 */
+        z-index: 9990 !important;
+    }
+
+    .nav-menu.active {
+        display: flex !important;
+        /* 點擊後顯示 */
+    }
+
+    /* 內部 ul 垂直排列，解除所有原本的限制 */
+    .nav-left ul,
+    .nav-right ul {
+        display: flex !important;
+        flex-direction: column !important;
+        width: 100% !important;
+        background: transparent !important;
+        position: static !important;
+        padding: 0 !important;
+        box-shadow: none !important;
+        border: none !important;
+    }
+
+    .nav-left ul li,
+    .nav-right ul li {
+        margin: 10px auto !important;
+        text-align: center !important;
+        width: 90% !important;
+    }
+
+    /* 右側選單(購物車等)上方加一條分隔線區隔 */
+    .nav-right {
+        border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+        padding-top: 15px !important;
+        margin-top: 15px !important;
+    }
+
+    /* 搜尋框微調，讓它滿版且置中 */
+    .search-wrapper {
+        width: 90% !important;
+        margin: 15px auto !important;
+        display: flex !important;
+        justify-content: center !important;
+    }
+
+    .search-wrapper input[type="text"] {
+        width: 100% !important;
+        text-align: center;
+    }
+
+    /* 聯絡我們變單欄 */
+    #contact_grid {
+        grid-template-columns: 1fr !important;
     }
 }
 
 /* =========================================
-   8. RWD 響應式修正
+   9. 修復輪播圖圖片失真變形 (Hero Image)
    ========================================= */
-@media (max-width: 768px) {
-    header {
-        padding: 0 20px;
+/* 電腦版：滿版且等比裁切 */
+.hero-img {
+    width: 100%;
+    height: 100% !important;
+    object-fit: cover !important;
+    /* 🔥 魔法屬性：保持比例不變形，自動裁切多餘部分 */
+    object-position: center;
+}
+
+/* 手機版：調整外層與圖片高度 */
+@media (max-width: 1500px) {
+    .carousel-item {
+        height: 45vh !important;
+        /* 手機版整體高度縮小，才不會佔滿整個畫面 */
+        min-height: 350px !important;
     }
 
-    /* 漢堡選單展開後的樣式 */
-    .nav-left ul {
-        position: fixed;
-        top: 80px;
-        left: 0;
-        width: 100%;
-        background: rgba(15, 23, 42, 0.95);
-        flex-direction: column;
-        padding: 20px;
-        display: none;
-        /* JS控制切換 */
-        border-bottom: 1px solid var(--accent);
+    .hero-img {
+        height: auto !important;
+        max-height: 45vh !important;
+        object-fit: cover !important;
+        width: 100% !important;
     }
 
-    .nav-left ul.active {
-        display: flex;
+    /* 🔥 替換成這段：微調手機版的輪播文字大小與位置 */
+    .carousel-caption {
+        bottom: 15% !important;
+        /* 手機版往下挪一點，避免擋住圖片主體 */
     }
 
-    .search-wrapper input[type="text"] {
-        width: 100%;
-    }
-
-    .menu-toggle {
-        display: block;
-    }
-
-    .nav-right {
-        display: none;
-    }
-
-    /* 手機版暫時隱藏右側，或整併進左側 */
-
-    /* 輪播文字縮小 */
     .carousel-caption h2 {
-        font-size: 2rem;
+        font-size: 1.5rem !important;
+        /* 標題稍微縮小 */
+        letter-spacing: 2px !important;
+        margin-bottom: 5px !important;
     }
 
-    /* 聯絡我們變兩欄 */
-    #contact_us {
-        grid-template-columns: repeat(2, 1fr);
+    .carousel-caption p {
+        font-size: 0.9rem !important;
+        /* 副標題也縮小 */
+    }
+}
+
+/* =========================================
+   10. 購物車手機版跑版修復 (Cart Mobile Fix)
+   ========================================= */
+@media (max-width: 1500px) {
+
+    /* 1. 讓表格外層容器變成「可以左右滑動」 */
+    .tech-table-wrapper {
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch;
+        /* 讓 iOS 手機滑動起來有慣性、更絲滑 */
+        border-radius: 8px !important;
+    }
+
+    /* 2. 關鍵魔法：強制表格內的所有文字「絕對不准換行」 */
+    .tech-table th,
+    .tech-table td {
+        white-space: nowrap !important;
+        vertical-align: middle !important;
+    }
+
+    /* 3. 確保第一欄 (圖片+商品名稱) 有足夠的呼吸空間，不會被擠壓 */
+    .tech-table td:first-child {
+        min-width: 250px !important;
+    }
+
+    /* 4. 確保數量和按鈕區塊有基本寬度 */
+    .tech-table td:nth-child(2),
+    .tech-table td:nth-child(3),
+    .tech-table td:nth-child(4) {
+        min-width: 100px !important;
+        text-align: center !important;
+    }
+
+    .tech-table th {
+        text-align: center !important;
+    }
+
+    /* 讓第一欄的表頭靠左對齊，對齊下方的商品圖 */
+    .tech-table th:first-child {
+        text-align: left !important;
     }
 }
