@@ -72,6 +72,46 @@
         </div>
     </div>
 
+    <div class="modal fade" id="productDetailModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content"
+                style="background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px); border: 1px solid var(--accent);">
+                <div class="modal-header border-bottom border-info">
+                    <h5 class="modal-title" id="detail-modal-title"
+                        style="color: #fff; font-family: var(--font-title); letter-spacing: 1px;">裝備詳情</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body p-0">
+                    <div id="productGalleryCarousel" class="carousel slide" data-bs-ride="carousel">
+                        <div class="carousel-inner" id="carousel-inner-container">
+                        </div>
+
+                        <button class="carousel-control-prev" type="button" data-bs-target="#productGalleryCarousel"
+                            data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">上一張</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#productGalleryCarousel"
+                            data-bs-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">下一張</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="modal-footer border-top border-secondary d-flex justify-content-between">
+                    <div class="tech-text" style="color: var(--accent); font-size: 1.5rem; font-weight: bold;"
+                        id="detail-modal-price">NT$0</div>
+
+                    <button type="button" class="btn btn-primary px-4 add-to-cart" id="detail-modal-add-cart"
+                        style="border-radius: 50px;">加入購物車</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div id="cart-toast" class="toast-tech">
         <span style="font-size: 1.5rem;">🛒</span>
         <div>

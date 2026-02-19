@@ -74,63 +74,79 @@
         <div class="container">
             <h2 class="section-title text-center mb-5">熱門趨勢 <span class="highlight">TRENDING</span></h2>
 
-            <div class="row g-4">
+            <div class="row g-4 mt-2 mb-5">
+
                 <div class="col-12 col-md-6">
-                    <div class="tech-card h-100">
-                        <div class="card-header-tech">
-                            <h3 class="title">🔥 熱門推薦 (卡牌&景品)</h3>
-                        </div>
-                        <div class="card-body-tech">
-                            <p>這裡可以放最新的商品縮圖或輪播...</p>
+                    <div class="tech-panel p-4 h-100"
+                        style="background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(6, 182, 212, 0.3); border-left: 4px solid #06b6d4; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.3);">
+                        <h5 class="mb-4" style="color: #06b6d4; font-family: var(--font-title); letter-spacing: 2px;">
+                            🆕 最新到貨 <span style="font-size: 0.8rem; color: #64748b;">NEW ARRIVALS</span>
+                        </h5>
+                        <div id="new-arrivals-list" class="d-flex flex-column gap-2">
                         </div>
                     </div>
                 </div>
 
                 <div class="col-12 col-md-6">
-                    <div class="tech-card h-100">
-                        <div class="card-header-tech">
-                            <h3 class="title">✨ 熱門推薦 (其他)</h3>
-                        </div>
-                        <div class="card-body-tech">
-                            <p>更多周邊商品...</p>
+                    <div class="tech-panel p-4 h-100"
+                        style="background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(16, 185, 129, 0.3); border-left: 4px solid #10b981; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.3);">
+                        <h5 class="mb-4" style="color: #10b981; font-family: var(--font-title); letter-spacing: 2px;">
+                            ✨ 高光推薦 <span style="font-size: 0.8rem; color: #64748b;">RECOMMENDED</span>
+                        </h5>
+                        <div id="high-stock-list" class="d-flex flex-column gap-2">
                         </div>
                     </div>
                 </div>
 
                 <div class="col-12 col-md-6">
-                    <div class="tech-card ranking-card">
-                        <div class="card-header-tech">
-                            <h3 class="title">🏆 銷售排行榜 - 收藏篇</h3>
+                    <div class="tech-panel p-4 h-100"
+                        style="background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(239, 68, 68, 0.3); border-left: 4px solid #ef4444; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.3);">
+                        <h5 class="mb-4" style="color: #ef4444; font-family: var(--font-title); letter-spacing: 2px;">
+                            ⚠️ 限量稀有 <span style="font-size: 0.8rem; color: #64748b;">LOW STOCK ALERT</span>
+                        </h5>
+                        <div id="rare-items-list" class="d-flex flex-column gap-2">
                         </div>
-                        <ul class="ranking-list">
-                            <li><span class="rank-num top-1">1</span> 景品銷售冠軍 - 初音未來</li>
-                            <li><span class="rank-num top-2">2</span> 景品銷售亞軍 - 雷姆</li>
-                            <li><span class="rank-num top-3">3</span> 景品銷售季軍 - 狂三</li>
-                            <li><span class="rank-num">4</span> 卡片熱銷王 - 青眼白龍</li>
-                            <li><span class="rank-num">5</span> 卡片人氣賞 - 黑暗大法師</li>
-                        </ul>
                     </div>
                 </div>
 
                 <div class="col-12 col-md-6">
-                    <div class="tech-card ranking-card">
-                        <div class="card-header-tech">
-                            <h3 class="title">🎵 銷售排行榜 - 生活篇</h3>
+                    <div class="tech-panel p-4 h-100"
+                        style="background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(139, 92, 246, 0.3); border-left: 4px solid #8b5cf6; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.3);">
+                        <h5 class="mb-4" style="color: #8b5cf6; font-family: var(--font-title); letter-spacing: 2px;">
+                            🗂️ 快速索引 <span style="font-size: 0.8rem; color: #64748b;">QUICK ACCESS</span>
+                        </h5>
+                        <div class="row g-3">
+                            <div class="col-6"><a href="pages/products.html?category=figure"
+                                    class="btn btn-outline-secondary w-100 d-flex justify-content-between align-items-center"
+                                    style="border-radius: 6px; border-color: rgba(255,255,255,0.1);"><span>🤖 景品</span>
+                                    <span class="badge bg-secondary">FIGURE</span></a></div>
+                            <div class="col-6"><a href="pages/products.html?category=card"
+                                    class="btn btn-outline-secondary w-100 d-flex justify-content-between align-items-center"
+                                    style="border-radius: 6px; border-color: rgba(255,255,255,0.1);"><span>🃏 卡片</span>
+                                    <span class="badge bg-secondary">CARD</span></a></div>
+                            <div class="col-6"><a href="pages/products.html?category=clothes"
+                                    class="btn btn-outline-secondary w-100 d-flex justify-content-between align-items-center"
+                                    style="border-radius: 6px; border-color: rgba(255,255,255,0.1);"><span>👕 服飾</span>
+                                    <span class="badge bg-secondary">APPAREL</span></a></div>
+                            <div class="col-6"><a href="pages/products.html?category=music"
+                                    class="btn btn-outline-secondary w-100 d-flex justify-content-between align-items-center"
+                                    style="border-radius: 6px; border-color: rgba(255,255,255,0.1);"><span>🎸 樂器</span>
+                                    <span class="badge bg-secondary">GEAR</span></a></div>
+                            <div class="col-12"><a href="pages/products.html?category=other"
+                                    class="btn btn-outline-secondary w-100 d-flex justify-content-between align-items-center"
+                                    style="background: rgba(139, 92, 246, 0.1); border-color: rgba(139, 92, 246, 0.3); color: #c4b5fd; border-radius: 6px;"><span>📦
+                                        其他周邊配件</span> <span class="badge" style="background: #8b5cf6;">OTHERS</span></a>
+                            </div>
                         </div>
-                        <ul class="ranking-list">
-                            <li><span class="rank-num top-1">1</span> 衣服銷售冠軍</li>
-                            <li><span class="rank-num top-2">2</span> 衣服銷售亞軍</li>
-                            <li><span class="rank-num top-3">3</span> 衣服銷售季軍</li>
-                            <li><span class="rank-num">4</span> 樂器熱銷王</li>
-                            <li><span class="rank-num">5</span> 樂器人氣賞</li>
-                        </ul>
                     </div>
                 </div>
+
             </div>
         </div>
     </section>
 
     <script src="js/layout.js"></script>
+    <script src="js/data.js"></script>
     <script src="js/main.js"></script>
 </body>
 

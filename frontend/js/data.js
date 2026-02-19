@@ -9,7 +9,12 @@ const productsData = [
         price: 500,
         image: "../assets/images/sample_product.jpg",
         category: "figure",
-        stock: 15 // 庫存充足
+        stock: 15, // 庫存充足
+        // 🔥 新增：各個角度的圖片 (測試輪播圖用，放了兩張假圖片)
+        gallery: [
+            "../assets/images/sample_product.jpg", 
+            "../assets/images/sample_product.jpg" 
+        ]
     },
     {
         id: 2,
@@ -17,7 +22,8 @@ const productsData = [
         price: 1200,
         image: "../assets/images/sample_product.jpg",
         category: "card",
-        stock: 3  // 低庫存 (會變色)
+        stock: 3,  // 低庫存 (會變色)
+        gallery: [] // 空陣列代表沒有其他角度的圖片
     },
     {
         id: 3,
@@ -25,7 +31,8 @@ const productsData = [
         price: 850,
         image: "../assets/images/sample_product.jpg",
         category: "clothes",
-        stock: 20
+        stock: 20,
+        gallery: []
     },
     {
         id: 4,
@@ -33,7 +40,8 @@ const productsData = [
         price: 150,
         image: "../assets/images/sample_product.jpg",
         category: "music",
-        stock: 0  // 缺貨 (按鈕會鎖住)
+        stock: 0,  // 缺貨 (按鈕會鎖住)
+        gallery: []
     },
     {
         id: 5,
@@ -41,7 +49,8 @@ const productsData = [
         price: 300,
         image: "../assets/images/sample_product.jpg",
         category: "other",
-        stock: 8
+        stock: 8,
+        gallery: []
     },
     {
         id: 6,
@@ -49,7 +58,8 @@ const productsData = [
         price: 2500,
         image: "../assets/images/sample_product.jpg",
         category: "music",
-        stock: 5
+        stock: 5,
+        gallery: []
     },
     {
         id: 7,
@@ -57,7 +67,8 @@ const productsData = [
         price: 900,
         image: "../assets/images/sample_product.jpg",
         category: "other",
-        stock: 50
+        stock: 50,
+        gallery: []
     },
     {
         id: 8,
@@ -65,7 +76,8 @@ const productsData = [
         price: 450,
         image: "../assets/images/sample_product.jpg",
         category: "other",
-        stock: 12
+        stock: 12,
+        gallery: []
     },
     {
         id: 9,
@@ -73,7 +85,8 @@ const productsData = [
         price: 600,
         image: "../assets/images/sample_product.jpg",
         category: "figure",
-        stock: 10
+        stock: 10,
+        gallery: []
     },
     {
         id: 10,
@@ -81,7 +94,8 @@ const productsData = [
         price: 3000,
         image: "../assets/images/sample_product.jpg",
         category: "card",
-        stock: 1
+        stock: 1,
+        gallery: []
     },
     {
         id: 11,
@@ -89,7 +103,8 @@ const productsData = [
         price: 400,
         image: "../assets/images/sample_product.jpg",
         category: "clothes",
-        stock: 25
+        stock: 25,
+        gallery: []
     },
     {
         id: 12,
@@ -97,6 +112,7 @@ const productsData = [
         price: 1500,
         image: "../assets/images/sample_product.jpg",
         category: "music",
-        stock: 4
+        stock: 4,
+        gallery: []
     }
 ];
