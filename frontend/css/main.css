@@ -992,6 +992,17 @@ header nav a.active {
     color: rgba(255, 255, 255, 0.3) !important;
 }
 
+/* =========================================
+   下拉選單 <select> 選項深色化
+   ========================================= */
+.input-group-tech select.form-control option {
+    background-color: var(--bg-dark) !important;
+    /* 點開後的選項底色變深藍黑 */
+    color: #fff !important;
+    /* 選項文字變白 */
+    padding: 10px;
+}
+
 /* 4. 眼睛按鈕樣式 */
 .input-group-tech .input-group .btn {
     background: transparent !important;
@@ -1468,4 +1479,40 @@ header nav a.active {
     .tech-table th:first-child {
         text-align: left !important;
     }
+}
+
+/* =========================================
+   10. 忘記密碼視窗：發送驗證碼按鈕專屬修正
+   ========================================= */
+#send-code-btn {
+    background-color: var(--accent) !important;
+    /* 強制恢復科技青色底 */
+    color: #000000 !important;
+    /* 文字變成深黑色，對比度最高、最清楚 */
+    font-weight: 800 !important;
+    /* 字體加粗 */
+    letter-spacing: 1px !important;
+    border-radius: 0 8px 8px 0 !important;
+    /* 保持與輸入框接合處的右側圓角 */
+    opacity: 1 !important;
+    /* 徹底解除半透明封印 */
+    transition: all 0.3s ease !important;
+}
+
+/* 滑鼠移過去的發光特效 */
+#send-code-btn:hover:not(:disabled) {
+    background-color: #ffffff !important;
+    color: var(--accent) !important;
+    box-shadow: 0 0 15px var(--accent-glow) !important;
+}
+
+/* 當按鈕被點擊後 (進入倒數計時 disabled 狀態時) */
+#send-code-btn:disabled {
+    background-color: #334155 !important;
+    /* 變成科技冷灰色 */
+    color: #94a3b8 !important;
+    /* 黯淡的文字 */
+    cursor: not-allowed !important;
+    /* 滑鼠變成禁止符號 */
+    opacity: 0.9 !important;
 }

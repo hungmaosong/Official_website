@@ -22,36 +22,37 @@
                     <p>會員身份驗證</p>
                 </div>
                 <div class="login-body">
-                    <form>
+                    <form id="login-form">
                         <div class="mb-4 input-group-tech">
                             <label for="username" class="form-label">帳號</label>
                             <input type="text" id="username" class="form-control" placeholder="輸入您的帳號">
                         </div>
                         <div class="mb-4 input-group-tech">
-                            <label for="password" class="form-label">密碼</label>
+                            <div class="d-flex justify-content-between align-items-end mb-2">
+                                <label for="password" class="form-label mb-0">密碼</label>
+                                <a href="#" data-bs-toggle="modal" data-bs-target="#forgotPasswordModal"
+                                    style="font-size: 0.85rem; color: var(--accent); text-decoration: none; transition: color 0.3s;"
+                                    onmouseover="this.style.color='#fff';"
+                                    onmouseout="this.style.color='var(--accent)';">忘記密碼？</a>
+                            </div>
                             <div class="input-group">
                                 <input type="password" id="password" class="form-control" placeholder="輸入您的密碼">
-                        
-                                <button class="btn btn-outline-secondary" type="button" id="togglePassword">
-                                    👁️
-                                </button>
+                                <button class="btn btn-outline-secondary" type="button" id="togglePassword">👁️</button>
                             </div>
                         </div>
                         <div class="mb-4 input-group-tech">
                             <label for="captcha-input" class="form-label">驗證碼</label>
                             <div class="captcha-wrapper">
-                                <input type="text" id="captcha-input" class="form-control" placeholder="輸入右側代碼" maxlength="4">
-                        
+                                <input type="text" id="captcha-input" class="form-control" placeholder="輸入右側代碼"
+                                    maxlength="4">
                                 <div class="captcha-display" id="captcha-code">Loading...</div>
-                        
-                                <button type="button" class="btn btn-icon" id="refresh-captcha" title="刷新代碼">
-                                    🔄
-                                </button>
+                                <button type="button" class="btn btn-icon" id="refresh-captcha" title="刷新代碼">🔄</button>
                             </div>
                         </div>
                         <div class="d-grid gap-3">
                             <button type="submit" class="btn btn-primary btn-login">確認登入</button>
-                            <button type="button" class="btn btn-outline-secondary btn-register">註冊新身份</button>
+                            <a href="register.html" class="btn btn-outline-secondary btn-register text-center"
+                                style="text-decoration: none;">註冊新身份</a>
                         </div>
                     </form>
                 </div>
@@ -59,7 +60,68 @@
         </div>
     </section>
 
+    <div class="modal fade" id="forgotPasswordModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content tech-modal">
+                <div class="modal-header border-bottom-0">
+                    <h5 class="modal-title tech-title">🔐 安全金鑰重置 (RESET PASSWORD)</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="forgot-password-form">
+
+                        <div class="mb-3 input-group-tech">
+                            <label>請輸入您的登入帳號 (Account)</label>
+                            <input type="text" class="form-control" id="forgot-username" required>
+                        </div>
+                        <div class="mb-3 input-group-tech">
+                            <label>請輸入註冊時的電子信箱 (Email)</label>
+                            <div class="input-group">
+                                <input type="email" class="form-control" id="forgot-email" required
+                                    placeholder="agent@kcg.com">
+                                <button type="button" class="btn btn-primary px-3" id="send-code-btn"
+                                    style="background: var(--accent); border: none; font-weight: bold; color: #000;">發送驗證碼</button>
+                            </div>
+                        </div>
+
+                        <div class="mb-3 input-group-tech">
+                            <label>郵件驗證碼 (Verification Code)</label>
+                            <input type="text" class="form-control" id="forgot-code" placeholder="請先點擊上方發送驗證碼" required
+                                disabled>
+                        </div>
+
+                        <hr style="border-color: rgba(255,255,255,0.2); margin: 25px 0;">
+
+                        <div class="mb-3 input-group-tech">
+                            <label>設定新密碼 (New Password)</label>
+                            <div class="input-group">
+                                <input type="password" class="form-control" id="forgot-new-password"
+                                    placeholder="請設定 6 位數以上密碼" required minlength="6" disabled>
+                                <button class="btn" type="button" id="toggleForgotNewPwd" disabled>👁️</button>
+                            </div>
+                        </div>
+                        <div class="mb-4 input-group-tech">
+                            <label>確認新密碼 (Confirm Password)</label>
+                            <div class="input-group">
+                                <input type="password" class="form-control" id="forgot-confirm-password"
+                                    placeholder="請再次輸入新密碼" required minlength="6" disabled>
+                                <button class="btn" type="button" id="toggleForgotConfirmPwd" disabled>👁️</button>
+                            </div>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-login" id="reset-password-submit" disabled>🔄 確認重置密碼
+                                (CONFIRM)</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="../js/layout.js"></script>
+    <script src="../js/data.js"></script>
     <script src="../js/main.js"></script>
 </body>
 

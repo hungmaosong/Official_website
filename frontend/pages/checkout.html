@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KCG君王卡牌研究室 - 訂單確認</title>
+
+    <link rel="icon" href="../assets/images/logo.ico" type="image/x-icon">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Orbitron:wght@500;700&display=swap"
+        rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+    <link rel="stylesheet" href="../css/main.css">
+</head>
+
+<body>
+    <section class="products-section">
+        <div class="container" style="padding-top: 50px;">
+            <h2 class="section-title text-center mb-5">訂單確認 <span class="highlight">CHECKOUT</span></h2>
+
+            <div class="row g-4">
+                <div class="col-lg-7">
+                    <div class="tech-card p-4 h-100" style="background: rgba(15, 23, 42, 0.8);">
+                        <h4 class="mb-4"
+                            style="color: var(--accent); font-family: var(--font-title); border-bottom: 1px solid rgba(6, 182, 212, 0.3); padding-bottom: 10px;">
+                            📍 配送與通訊資料
+                        </h4>
+                        <form id="checkout-form">
+                            <div class="mb-3 input-group-tech">
+                                <label>收件人姓名 (Name)</label>
+                                <input type="text" class="form-control" id="checkout-name" required readonly
+                                    style="background: rgba(0,0,0,0.5) !important; color: #94a3b8 !important;">
+                            </div>
+
+                            <div class="mb-3 input-group-tech">
+                                <label>連絡電話 (Phone)</label>
+                                <input type="tel" class="form-control" id="checkout-phone" required readonly
+                                    style="background: rgba(0,0,0,0.5) !important; color: #94a3b8 !important;">
+                            </div>
+
+                            <div class="mb-3 input-group-tech">
+                                <label>電子信箱 (Email)</label>
+                                <input type="email" class="form-control" id="checkout-email" required readonly
+                                    style="background: rgba(0,0,0,0.5) !important; color: #94a3b8 !important;">
+                            </div>
+
+                            <div class="mb-4 input-group-tech">
+                                <label>7-11 取貨門市</label>
+                                <input type="text" class="form-control" id="checkout-store" required readonly
+                                    style="background: rgba(0,0,0,0.5) !important; color: #94a3b8 !important;">
+                            <small class="mt-2 d-block" style="color: rgba(255, 255, 255, 0.7); letter-spacing: 1px;">💡 系統已自動從您的個人檔案帶入以上資料。</small>
+                            </div>
+
+                            <h4 class="mb-4 mt-5"
+                                style="color: var(--accent); font-family: var(--font-title); border-bottom: 1px solid rgba(6, 182, 212, 0.3); padding-bottom: 10px;">
+                                💳 付款方式
+                            </h4>
+                            <div class="mb-5 input-group-tech">
+                                <select class="form-control" id="checkout-payment" required style="cursor: pointer;">
+                                    <option value="711_cash">7-11 門市取貨付款</option>
+                                    <option value="credit_card">信用卡線上授權 (VISA / JCB / Mastercard)</option>
+                                    <option value="atm">銀行 ATM 虛擬帳號轉帳</option>
+                                </select>
+                            </div>
+
+                            <button type="submit" class="btn btn-login w-100 py-3"
+                                style="font-size: 1.2rem; letter-spacing: 2px;">
+                                🚀 確認發送訂單 (SUBMIT ORDER)
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="col-lg-5">
+                    <div class="checkout-panel h-100 d-flex flex-column">
+                        <h4 class="mb-4" style="color: #fff; font-family: var(--font-title);">🛒 購物清單摘要</h4>
+
+                        <div id="checkout-items" class="flex-grow-1"
+                            style="max-height: 450px; overflow-y: auto; padding-right: 10px;">
+                        </div>
+
+                        <hr style="border-color: rgba(255,255,255,0.2); margin: 20px 0;">
+
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span style="color: #94a3b8; font-size: 1.2rem; letter-spacing: 1px;">總金額</span>
+                            <span class="tech-total-price" id="checkout-total">NT$0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="../js/layout.js"></script>
+    <script src="../js/data.js"></script>
+    <script src="../js/main.js"></script>
+</body>
+
+</html>

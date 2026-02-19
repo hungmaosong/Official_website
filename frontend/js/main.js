@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-   // ==========================================
+    // ==========================================
     // 2. 商品列表渲染功能 (含分類篩選)
     // ==========================================
     const productsContainer = document.getElementById("products-container");
@@ -335,108 +335,8 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // ==========================================
-    // 4. 登入頁密碼顯示切換
-    // ==========================================
-    const togglePasswordBtn = document.getElementById('togglePassword');
-    const passwordInput = document.getElementById('password');
-
-    if (togglePasswordBtn && passwordInput) {
-        togglePasswordBtn.addEventListener('click', function() {
-            // 切換 type 屬性
-            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-            passwordInput.setAttribute('type', type);
-            
-            // 切換圖示
-            this.textContent = type === 'password' ? '👁️' : '🙈';
-        });
-    }
-
-    // ==========================================
-    // 5. 安全驗證碼邏輯 (Captcha System)
-    // ==========================================
-    const captchaDisplay = document.getElementById('captcha-code');
-    const captchaInput = document.getElementById('captcha-input');
-    const refreshBtn = document.getElementById('refresh-captcha');
-    const loginForm = document.querySelector('#login_block form');
-
-    // 隨機產生 4 位數驗證碼
-    function generateCaptcha() {
-        if (!captchaDisplay) return;
-        
-        const randomNum = Math.floor(Math.random() * 10000);
-        const code = randomNum.toString().padStart(4, '0');
-        
-        captchaDisplay.innerText = code;
-        captchaDisplay.setAttribute('data-code', code);
-    }
-
-    // 初始化
-    generateCaptcha();
-
-    // 點擊刷新按鈕
-    if (refreshBtn) {
-        refreshBtn.addEventListener('click', () => {
-            captchaDisplay.style.opacity = '0.5';
-            setTimeout(() => {
-                generateCaptcha();
-                captchaDisplay.style.opacity = '1';
-                captchaInput.value = '';
-                captchaInput.focus();
-            }, 200);
-        });
-    }
-
-    // 攔截表單登入
-    if (loginForm) {
-        loginForm.addEventListener('submit', function(e) {
-            e.preventDefault(); // 先阻止表單送出
-            
-            // 抓取驗證碼輸入
-            const userCode = captchaInput.value;
-            const realCode = captchaDisplay.getAttribute('data-code');
-            
-            // 抓取帳號密碼輸入框
-            const usernameInput = document.getElementById('username');
-            const passwordInput = document.getElementById('password');
-
-            // 1. 第一關：驗證安全碼
-            if (userCode !== realCode) {
-                alert("⛔ 安全驗證失敗：驗證碼錯誤！");
-                captchaInput.classList.add('is-invalid');
-                captchaInput.value = '';
-                generateCaptcha();
-                return; // 驗證碼錯了就直接中斷，不往下檢查帳密
-            } 
-
-            // 2. 第二關：驗證帳號與密碼 (模擬資料庫比對)
-            const userVal = usernameInput.value.trim();
-            const passVal = passwordInput.value.trim();
-
-            // 這裡設定最高權限測試帳號為 admin / 123456
-            if (userVal === 'admin' && passVal === '123456') {
-                // 登入成功：寫入 LocalStorage 記住身份
-                localStorage.setItem('isLoggedIn', 'true');
-                localStorage.setItem('username', userVal);
-                
-                // 保留你的成功訊息
-                alert("✅ 身份驗證通過！正在進入系統..."); 
-                
-                // 跳轉回首頁
-                window.location.href = '../index.html'; 
-            } else {
-                // 登入失敗 (帳號或密碼錯誤)
-                alert("⛔ 登入失敗：帳號或密碼錯誤！");
-                passwordInput.value = ''; // 安全起見，清空密碼框
-                captchaInput.value = '';  // 清空驗證碼框
-                generateCaptcha();        // 登入失敗也要刷新驗證碼防止暴力破解
-            }
-        });
-        
-        captchaInput.addEventListener('input', () => {
-            captchaInput.classList.remove('is-invalid');
-        });
-    }
+    // 🛑 注意：原本的「4. 登入頁密碼」和「5. 驗證碼邏輯」已被刪除。
+    // 它們已經被整合到檔案最下方的「13. 會員登入系統 (獨立防呆版)」中。
 
     // ==========================================
     // 9. 購物車頁面渲染邏輯 (Cart Rendering)
@@ -683,3 +583,426 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 }); // 整個 DOMContentLoaded 結束
+
+
+// ==========================================
+// 12. 會員註冊系統 (Registration Logic) - 獨立防呆版
+// ==========================================
+document.addEventListener('DOMContentLoaded', function() {
+    const registerForm = document.getElementById('register-form');
+    
+    if (registerForm) {
+        // A1. 密碼眼睛切換邏輯 (主密碼)
+        const toggleRegPasswordBtn = document.getElementById('toggleRegPassword');
+        const regPasswordInput = document.getElementById('reg-password');
+        if (toggleRegPasswordBtn && regPasswordInput) {
+            toggleRegPasswordBtn.addEventListener('click', function() {
+                const type = regPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                regPasswordInput.setAttribute('type', type);
+                this.textContent = type === 'password' ? '👁️' : '🙈';
+            });
+        }
+
+        // A2. 密碼眼睛切換邏輯 (確認密碼)
+        const toggleRegPasswordConfirmBtn = document.getElementById('toggleRegPasswordConfirm');
+        const regPasswordConfirmInput = document.getElementById('reg-password-confirm');
+        if (toggleRegPasswordConfirmBtn && regPasswordConfirmInput) {
+            toggleRegPasswordConfirmBtn.addEventListener('click', function() {
+                const type = regPasswordConfirmInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                regPasswordConfirmInput.setAttribute('type', type);
+                this.textContent = type === 'password' ? '👁️' : '🙈';
+            });
+        }
+
+        // B. 註冊資料存檔邏輯
+        registerForm.addEventListener('submit', function(e) {
+            e.preventDefault(); 
+
+            // 1. 抓取特務填寫的所有欄位資料
+            const name = document.getElementById('reg-name').value.trim(); // 🔥 抓取姓名
+            const username = document.getElementById('reg-username').value.trim();
+            const password = document.getElementById('reg-password').value;
+            const confirmPassword = document.getElementById('reg-password-confirm').value; // 🔥 抓取確認密碼
+            const phone = document.getElementById('reg-phone').value.trim();
+            const email = document.getElementById('reg-email').value.trim();
+            const store = document.getElementById('reg-store').value;
+
+            // 🔥 2. 防呆檢查：兩次密碼是否一致？
+            if (password !== confirmPassword) {
+                alert("⚠️ 權限申請失敗：兩次輸入的密碼不一致，請重新確認！");
+                document.getElementById('reg-password-confirm').focus(); // 游標跳回確認密碼框
+                return; // 中斷程式
+            }
+
+            // 3. 讀取目前的「會員資料庫」
+            let usersDB = JSON.parse(localStorage.getItem('usersDatabase')) || [];
+
+            // 4. 防呆檢查：帳號是否重複？
+            const isUserExist = usersDB.some(user => user.username === username);
+            if (isUserExist) {
+                alert("⚠️ 權限申請失敗：此登入代號 (帳號) 已被其他人使用，請更換一個！");
+                document.getElementById('reg-username').focus();
+                return; 
+            }
+
+            // 5. 打包新會員的資料 (加入 name 欄位)
+            const newUser = {
+                name: name,         // 🔥 存入姓名
+                username: username,
+                password: password, 
+                phone: phone,
+                email: email,
+                store_711: store,
+                registerTime: new Date().toLocaleString()
+            };
+
+            // 6. 將新會員存入 LocalStorage
+            usersDB.push(newUser);
+            localStorage.setItem('usersDatabase', JSON.stringify(usersDB));
+
+            // 7. 成功提示與跳轉
+            alert(`✅ 存取權限建立成功！\n歡迎特務 [ ${name} ] 加入 KCG 君王卡牌研究室。\n\n系統將自動引導您前往登入...`);
+            window.location.href = 'login.html'; 
+        });
+    }
+});
+
+// ==========================================
+// 13. 會員登入系統 (Login Logic) - 獨立防呆版 (含驗證碼)
+// ==========================================
+document.addEventListener('DOMContentLoaded', function() {
+    const loginForm = document.getElementById('login-form');
+    
+    if (loginForm) {
+        console.log("✅ 登入系統大腦已成功連線！");
+
+        // A. 隨機產生 4 位數驗證碼邏輯
+        const captchaDisplay = document.getElementById('captcha-code');
+        const captchaInput = document.getElementById('captcha-input');
+        const refreshBtn = document.getElementById('refresh-captcha');
+
+        function generateCaptcha() {
+            if (!captchaDisplay) return;
+            const randomNum = Math.floor(Math.random() * 10000);
+            const code = randomNum.toString().padStart(4, '0');
+            captchaDisplay.innerText = code;
+            // 把真實密碼藏在 data-code 屬性裡，防呆比對用
+            captchaDisplay.setAttribute('data-code', code);
+        }
+
+        // 初始化驗證碼
+        generateCaptcha();
+
+        // 綁定刷新按鈕
+        if (refreshBtn) {
+            refreshBtn.addEventListener('click', () => {
+                captchaDisplay.style.opacity = '0.5';
+                setTimeout(() => {
+                    generateCaptcha();
+                    captchaDisplay.style.opacity = '1';
+                    captchaInput.value = '';
+                    captchaInput.focus();
+                }, 200);
+            });
+        }
+
+        // 輸入時移除紅框警告
+        if (captchaInput) {
+            captchaInput.addEventListener('input', () => {
+                captchaInput.classList.remove('is-invalid');
+            });
+        }
+
+        // B. 密碼眼睛切換 (修復登入頁的 👁️ 按鈕)
+        const togglePasswordBtn = document.getElementById('togglePassword');
+        const passwordInput = document.getElementById('password');
+        if (togglePasswordBtn && passwordInput) {
+            togglePasswordBtn.addEventListener('click', function() {
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+                this.textContent = type === 'password' ? '👁️' : '🙈';
+            });
+        }
+
+        // C. 登入表單送出邏輯 (細緻化錯誤提示)
+        loginForm.addEventListener('submit', function(e) {
+            e.preventDefault(); 
+
+            const usernameInput = document.getElementById('username');
+            
+            const userVal = usernameInput.value.trim();
+            const passVal = passwordInput.value;
+            const capVal = captchaInput.value.trim();
+            const currentCaptcha = captchaDisplay ? captchaDisplay.getAttribute('data-code') : '';
+
+            // 防呆第 1 關：驗證碼檢查
+            if (capVal !== currentCaptcha) {
+                alert("⛔ 安全驗證失敗：驗證碼錯誤！");
+                captchaInput.classList.add('is-invalid');
+                captchaInput.value = '';
+                captchaInput.focus();
+                generateCaptcha(); // 刷新驗證碼
+                return; 
+            }
+
+            // 防呆第 2 關：細緻化比對帳號與密碼
+            let usersDB = JSON.parse(localStorage.getItem('usersDatabase')) || [];
+            const foundUser = usersDB.find(user => user.username === userVal);
+            
+            // 開發者後門 (可以直接登入)
+            const isAdmin = (userVal === 'admin' && passVal === '123456');
+
+            if (isAdmin) {
+                localStorage.setItem('isLoggedIn', 'true');
+                localStorage.setItem('username', 'admin');
+                localStorage.setItem('name', 'ADMIN');
+                alert("✅ 身份驗證通過！歡迎 [ ADMIN ] 進入系統...");
+                window.location.href = '../index.html';
+                return;
+            }
+
+            if (!foundUser) {
+                alert("⛔ 存取被拒：此登入代號 (帳號) 不存在！\n如果您還沒有權限，請點擊下方「註冊新身份」。");
+                usernameInput.focus(); 
+                passwordInput.value = ''; 
+                captchaInput.value = '';  
+                generateCaptcha();
+                return;
+            }
+
+            if (foundUser.password !== passVal) {
+                alert("⛔ 存取被拒：密碼輸入錯誤，請重新確認！");
+                passwordInput.value = ''; 
+                passwordInput.focus();
+                captchaInput.value = '';  
+                generateCaptcha();
+                return;
+            }
+
+            // 第 3 關：帳號密碼皆正確，放行登入！
+            localStorage.setItem('isLoggedIn', 'true');
+            localStorage.setItem('username', foundUser.username);
+            localStorage.setItem('name', foundUser.name);      
+            localStorage.setItem('userStore', foundUser.store_711); 
+
+            alert(`✅ 身份驗證通過！歡迎 [ ${foundUser.name} ] 進入系統...`);
+            window.location.href = '../index.html';
+        });
+    }
+});
+
+// ==========================================
+// 14. 結帳頁面邏輯 (Checkout Logic)
+// ==========================================
+document.addEventListener('DOMContentLoaded', function() {
+    const checkoutForm = document.getElementById('checkout-form');
+
+    if (checkoutForm) {
+        console.log("✅ 結帳系統已連線！");
+
+        // 1. 權限與購物車空件檢查
+        const isUserLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+        let cart = JSON.parse(localStorage.getItem('techCart')) || [];
+
+        // 如果沒登入，踢回登入頁
+        if (!isUserLoggedIn) {
+            alert("⚠️ 存取被拒：請先完成身份驗證才能進行結帳！");
+            window.location.href = 'login.html';
+            return;
+        }
+
+        // 如果購物車是空的，踢回裝備庫
+        if (cart.length === 0) {
+            alert("⚠️ 購物清單為空，無法發送訂單！請先挑選商品。");
+            window.location.href = 'products.html';
+            return;
+        }
+
+        // 2. 自動帶入會員註冊時的資料
+        const currentUsername = localStorage.getItem('username');
+        let usersDB = JSON.parse(localStorage.getItem('usersDatabase')) || [];
+        const currentUser = usersDB.find(user => user.username === currentUsername);
+
+        if (currentUser) {
+            document.getElementById('checkout-name').value = currentUser.name || currentUsername;
+            document.getElementById('checkout-phone').value = currentUser.phone || '無資料';
+            document.getElementById('checkout-email').value = currentUser.email || '無資料';
+            document.getElementById('checkout-store').value = currentUser.store_711 || localStorage.getItem('userStore') || '未選擇門市';
+        } else if (currentUsername === 'admin') {
+            // 保留給管理員測試用的假資料
+            document.getElementById('checkout-name').value = '最高管理員 ADMIN';
+            document.getElementById('checkout-phone').value = '0900-000-000';
+            document.getElementById('checkout-email').value = 'admin@kcg.com';
+            document.getElementById('checkout-store').value = 'KCG 總部直屬門市';
+        }
+
+        // 3. 渲染右側的商品摘要
+        const checkoutItemsContainer = document.getElementById('checkout-items');
+        const checkoutTotalElement = document.getElementById('checkout-total');
+        let total = 0;
+
+        checkoutItemsContainer.innerHTML = '';
+        cart.forEach(item => {
+            const subtotal = item.price * item.quantity;
+            total += subtotal;
+
+            checkoutItemsContainer.innerHTML += `
+                <div class="d-flex align-items-center mb-3 pb-3" style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                    <img src="${item.image}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px; border: 1px solid rgba(6, 182, 212, 0.3); margin-right: 15px;">
+                    <div class="flex-grow-1">
+                        <h6 style="color: #fff; margin: 0 0 5px 0; font-size: 0.95rem;">${item.name}</h6>
+                        <small style="color: #94a3b8; font-family: var(--font-title);">NT$${item.price} x ${item.quantity}</small>
+                    </div>
+                    <div style="color: var(--accent); font-weight: bold; font-family: var(--font-title);">
+                        NT$${subtotal}
+                    </div>
+                </div>
+            `;
+        });
+        
+        checkoutTotalElement.innerText = `NT$${total}`;
+
+        // 4. 處理訂單送出 (最終結帳動作)
+        checkoutForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // 產生一個超帥的假訂單編號 (KCG + 當下時間 + 亂數)
+            const orderNumber = 'KCG' + Date.now().toString().slice(-6) + Math.floor(Math.random() * 1000);
+
+            // 這裡未來會發送 API 給 Python/Node.js 後端，現在我們先模擬成功畫面
+            alert(`🎉 訂單發送成功！\n\n📄 訂單編號：${orderNumber}\n💰 總金額：NT$${total}\n\n商品將盡速配送至您的取貨門市，請留意簡訊通知。`);
+
+            // 🔥 結帳完成後，最重要的事情：清空購物車！
+            localStorage.removeItem('techCart');
+
+            // 導回首頁，完美結束流程
+            window.location.href = '../index.html';
+        });
+    }
+});
+
+// ==========================================
+// 15. 忘記密碼系統 (Forgot Password Logic)
+// ==========================================
+document.addEventListener('DOMContentLoaded', function() {
+    const forgotPwdForm = document.getElementById('forgot-password-form');
+    
+    if (forgotPwdForm) {
+        console.log("✅ 忘記密碼系統大腦已連線！");
+
+        const sendCodeBtn = document.getElementById('send-code-btn');
+        const forgotUsername = document.getElementById('forgot-username');
+        const forgotEmail = document.getElementById('forgot-email');
+        const forgotCode = document.getElementById('forgot-code');
+        const newPwd = document.getElementById('forgot-new-password');
+        const confirmPwd = document.getElementById('forgot-confirm-password');
+        const submitBtn = document.getElementById('reset-password-submit');
+        
+        const toggleNewPwdBtn = document.getElementById('toggleForgotNewPwd');
+        const toggleConfirmPwdBtn = document.getElementById('toggleForgotConfirmPwd');
+
+        let generatedCode = ""; // 暫存系統生成的驗證碼
+        let timer = null;       // 宣告計時器變數
+
+        // A. 模擬發送驗證碼與倒數防呆機制
+        sendCodeBtn.addEventListener('click', function() {
+            const userVal = forgotUsername.value.trim();
+            const emailVal = forgotEmail.value.trim();
+
+            if (!userVal || !emailVal) {
+                alert("⚠️ 請先輸入帳號與註冊時的電子信箱！");
+                return;
+            }
+
+            let usersDB = JSON.parse(localStorage.getItem('usersDatabase')) || [];
+            const targetUser = usersDB.find(user => user.username === userVal && user.email === emailVal);
+
+            if (!targetUser) {
+                alert("⛔ 查無此人：帳號或電子信箱不正確，請重新確認！");
+                return;
+            }
+
+            // 生成 6 位數模擬驗證碼
+            generatedCode = Math.floor(100000 + Math.random() * 900000).toString();
+            
+            // 模擬寄信通知
+            alert(`📧 【系統模擬發信】\n\n已發送驗證碼至：${emailVal}\n\n您的驗證碼為：${generatedCode}\n(請將此代碼填入下方驗證碼欄位)`);
+
+            // 解鎖下方的輸入框
+            forgotCode.disabled = false;
+            newPwd.disabled = false;
+            confirmPwd.disabled = false;
+            submitBtn.disabled = false;
+            toggleNewPwdBtn.disabled = false;
+            toggleConfirmPwdBtn.disabled = false;
+            
+            // 🔥 啟動 60 秒倒數計時
+            sendCodeBtn.disabled = true; // 鎖定按鈕防止連點
+            let countdown = 60;
+            sendCodeBtn.textContent = `已發送 (${countdown}s)`;
+
+            timer = setInterval(() => {
+                countdown--;
+                if (countdown > 0) {
+                    sendCodeBtn.textContent = `已發送 (${countdown}s)`;
+                } else {
+                    // 時間到，解除鎖定並允許重寄
+                    clearInterval(timer);
+                    sendCodeBtn.disabled = false;
+                    sendCodeBtn.textContent = "重寄驗證碼";
+                }
+            }, 1000);
+        });
+
+        // B. 密碼眼睛切換功能
+        toggleNewPwdBtn.addEventListener('click', function() {
+            const type = newPwd.getAttribute('type') === 'password' ? 'text' : 'password';
+            newPwd.setAttribute('type', type);
+            this.textContent = type === 'password' ? '👁️' : '🙈';
+        });
+
+        toggleConfirmPwdBtn.addEventListener('click', function() {
+            const type = confirmPwd.getAttribute('type') === 'password' ? 'text' : 'password';
+            confirmPwd.setAttribute('type', type);
+            this.textContent = type === 'password' ? '👁️' : '🙈';
+        });
+
+        // C. 確認重置密碼送出
+        forgotPwdForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // 1. 檢查驗證碼
+            if (forgotCode.value.trim() !== generatedCode) {
+                alert("⛔ 驗證碼錯誤或已失效，請重新輸入！");
+                forgotCode.focus();
+                return;
+            }
+
+            // 2. 檢查兩次密碼是否一致
+            if (newPwd.value !== confirmPwd.value) {
+                alert("⚠️ 兩次輸入的新密碼不一致，請重新確認！");
+                confirmPwd.focus();
+                return;
+            }
+
+            // 3. 更新資料庫
+            let usersDB = JSON.parse(localStorage.getItem('usersDatabase')) || [];
+            const userIndex = usersDB.findIndex(user => user.username === forgotUsername.value.trim());
+
+            if (userIndex > -1) {
+                // 覆寫新密碼
+                usersDB[userIndex].password = newPwd.value;
+                localStorage.setItem('usersDatabase', JSON.stringify(usersDB));
+
+                alert("🎉 密碼重置成功！\n請使用您的新密碼重新登入系統。");
+                
+                // 關閉 Modal 並重整頁面
+                const modal = bootstrap.Modal.getInstance(document.getElementById('forgotPasswordModal'));
+                if (modal) modal.hide();
+                window.location.reload();
+            } else {
+                alert("⛔ 系統錯誤：找不到該用戶資料。");
+            }
+        });
+    }
+});
