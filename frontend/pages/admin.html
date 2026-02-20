@@ -23,9 +23,7 @@
            ========================================== */
         ::selection {
             background-color: var(--accent);
-            /* 反白時的背景色變成科技青色 */
             color: #000000;
-            /* 反白時的文字變成純黑，最清晰 */
         }
 
         ::-moz-selection {
@@ -155,26 +153,29 @@
 
                     <div class="tab-pane fade show active" id="v-pills-dashboard" role="tabpanel">
                         <div class="row g-4 mb-5">
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <div class="stat-card">
-                                    <div class="mb-2" style="color: #cbd5e1; font-weight: 600;">註冊會員總數 (Total Users)
-                                    </div>
+                                    <div class="mb-2" style="color: #cbd5e1; font-weight: 600;">註冊會員總數</div>
                                     <div class="stat-value" id="stat-users">0</div>
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <div class="stat-card">
-                                    <div class="mb-2" style="color: #cbd5e1; font-weight: 600;">低庫存警報 (Low Stock Items)
-                                    </div>
+                                    <div class="mb-2" style="color: #cbd5e1; font-weight: 600;">低庫存警報</div>
                                     <div class="stat-value" id="stat-low-stock" style="color: #ef4444;">0</div>
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <div class="stat-card">
-                                    <div class="mb-2" style="color: #cbd5e1; font-weight: 600;">累積營收 (Total Revenue)
-                                    </div>
+                                    <div class="mb-2" style="color: #cbd5e1; font-weight: 600;">累積營收</div>
                                     <div class="stat-value" style="color: #22c55e;">NT$ ---</div>
-                                    <small style="color: #64748b;">等待串接訂單資料庫...</small>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="stat-card">
+                                    <div class="mb-2" style="color: #cbd5e1; font-weight: 600;">伺服器狀態</div>
+                                    <div class="stat-value" id="stat-server" style="color: #f59e0b; font-size: 1.8rem;">
+                                        連線中...</div>
                                 </div>
                             </div>
                         </div>
@@ -213,8 +214,8 @@
                                     ➕ 新增商品
                                 </button>
                             </div>
-                            <p class="mb-4" style="color: #94a3b8;">💡 系統已自動將 data.js 資料轉移至
-                                LocalStorage。您可以自由新增、編輯庫存與價格。</p>
+                            <p class="mb-4" style="color: #22c55e; font-weight: bold;">✅ 已切換至後端模式！所有操作將直接寫入 Python
+                                真實資料庫。</p>
                             <div class="table-responsive">
                                 <table class="table tech-table align-middle">
                                     <thead>
@@ -350,6 +351,10 @@
 
     <script src="../js/data.js"></script>
     <script>
+        // ==========================================
+        // 🔥 後端 API 連線設定
+        // ==========================================
+        const API_BASE_URL = 'http://localhost:8000/api/products';
         let adminProductsDB = [];
 
         document.addEventListener('DOMContentLoaded', function () {
@@ -380,19 +385,10 @@
                 });
             }
 
-            // 3. 商品庫存系統 (動態讀寫)
-            if (!localStorage.getItem('adminProducts')) {
-                if (typeof productsData !== 'undefined') {
-                    localStorage.setItem('adminProducts', JSON.stringify(productsData));
-                } else {
-                    localStorage.setItem('adminProducts', JSON.stringify([]));
-                }
-            }
+            // 🔥 3. 初次載入：向 Python 伺服器請求商品資料庫
+            fetchProductsFromServer();
 
-            adminProductsDB = JSON.parse(localStorage.getItem('adminProducts'));
-            renderProductsTable();
-
-            // 🔥 4. 建立共用的 FileReader (圖片轉 Base64) 引擎
+            // 4. 建立共用的 FileReader (圖片轉 Base64) 引擎
             function setupImageUpload(fileInputId, dataInputId, previewImgId, previewTextId = null) {
                 const fileInput = document.getElementById(fileInputId);
                 if (!fileInput) return;
@@ -401,8 +397,8 @@
                     const file = e.target.files[0];
                     if (!file) return;
 
-                    if (file.size > 2 * 1024 * 1024) { // 限制 2MB
-                        alert("⚠️ 檔案過大！為避免瀏覽器儲存空間不足，請選擇 2MB 以下的圖片。");
+                    if (file.size > 2 * 1024 * 1024) {
+                        alert("⚠️ 檔案過大！為避免伺服器負載，請選擇 2MB 以下的圖片。");
                         this.value = '';
                         return;
                     }
@@ -425,7 +421,6 @@
                 });
             }
 
-            // 將引擎綁定到主圖與三張展示圖
             setupImageUpload('prod-image-file', 'prod-image-data', 'image-preview', 'image-preview-text');
             setupImageUpload('prod-gallery-file-1', 'prod-gallery-data-1', 'gallery-preview-1');
             setupImageUpload('prod-gallery-file-2', 'prod-gallery-data-2', 'gallery-preview-2');
@@ -434,11 +429,65 @@
             // 綁定表單送出事件
             document.getElementById('product-form').addEventListener('submit', function (e) {
                 e.preventDefault();
-                saveProduct();
+                saveProduct(); // 執行與伺服器溝通的儲存函數
             });
+
+            // ==========================================
+            // 🌟 UX 優化：記住戰情室最後停留的頁籤
+            // ==========================================
+            // 1. 監聽所有頁籤的切換事件，並把 ID 存起來
+            const adminTabs = document.querySelectorAll('#v-pills-tab button[data-bs-toggle="pill"]');
+            adminTabs.forEach(tab => {
+                tab.addEventListener('shown.bs.tab', function (event) {
+                    localStorage.setItem('lastActiveAdminTab', event.target.id);
+                });
+            });
+
+            // 2. 網頁載入時，檢查是否有記憶的頁籤，有的話就自動切換過去
+            const savedTabId = localStorage.getItem('lastActiveAdminTab');
+            if (savedTabId) {
+                const targetTab = document.getElementById(savedTabId);
+                if (targetTab) {
+                    const bsTab = new bootstrap.Tab(targetTab);
+                    bsTab.show();
+                }
+            }
         });
 
-        // 渲染商品表格
+        // ==========================================
+        // 🚀 API 核心功能區
+        // ==========================================
+
+        // 讀取伺服器資料 (GET)
+        async function fetchProductsFromServer() {
+            try {
+                const response = await fetch(API_BASE_URL);
+                if (!response.ok) throw new Error('伺服器回應錯誤');
+                const result = await response.json();
+
+                if (result.status === 'success') {
+                    adminProductsDB = result.data;
+                    renderProductsTable();
+
+                    // 更新伺服器狀態燈號
+                    const statServer = document.getElementById('stat-server');
+                    if (statServer) {
+                        statServer.innerText = '✅ 連線正常';
+                        statServer.style.color = '#22c55e';
+                    }
+                }
+            } catch (error) {
+                console.error("Fetch Error:", error);
+                const statServer = document.getElementById('stat-server');
+                if (statServer) {
+                    statServer.innerText = '❌ 連線失敗';
+                    statServer.style.color = '#ef4444';
+                }
+                alert("⚠️ 無法連線至後端伺服器！請確認 Python API 正在運行中。");
+            }
+        }
+
+        // 渲染商品表格 (維持你的排版格式)
         function renderProductsTable() {
             const productsListHTML = document.getElementById('admin-products-list');
             let lowStockCount = 0;
@@ -487,7 +536,7 @@
         // 輔助函數：用來重置預覽區塊
         function resetImagePreview(dataId, previewId, fileId, textId = null, imgUrl = '') {
             document.getElementById(dataId).value = imgUrl;
-            document.getElementById(fileId).value = ''; // 清空檔案選擇器
+            document.getElementById(fileId).value = '';
             const previewImg = document.getElementById(previewId);
 
             if (imgUrl) {
@@ -501,14 +550,13 @@
             }
         }
 
-        // 開啟 Modal
+        // 開啟 Modal (維持你的欄位讀取邏輯)
         function openProductModal(id = null) {
             const modalTitle = document.getElementById('productModalLabel');
             const form = document.getElementById('product-form');
             form.reset();
 
             if (id !== null) {
-                // 編輯模式
                 modalTitle.innerText = "⚙️ 編輯商品 (EDIT CONFIG)";
                 const product = adminProductsDB.find(p => p.id === id);
                 if (product) {
@@ -518,10 +566,8 @@
                     document.getElementById('prod-stock').value = product.stock;
                     document.getElementById('prod-category').value = product.category;
 
-                    // 填入圖片並顯示預覽
                     resetImagePreview('prod-image-data', 'image-preview', 'prod-image-file', 'image-preview-text', product.image);
 
-                    // 填入 Gallery 圖片並顯示預覽
                     let g1 = product.gallery && product.gallery[0] ? product.gallery[0] : '';
                     let g2 = product.gallery && product.gallery[1] ? product.gallery[1] : '';
                     let g3 = product.gallery && product.gallery[2] ? product.gallery[2] : '';
@@ -531,11 +577,9 @@
                     resetImagePreview('prod-gallery-data-3', 'gallery-preview-3', 'prod-gallery-file-3', null, g3);
                 }
             } else {
-                // 新增模式
                 modalTitle.innerText = "➕ 新增商品 (NEW PRODUCT)";
                 document.getElementById('prod-id').value = '';
 
-                // 清空所有預覽與隱藏欄位
                 resetImagePreview('prod-image-data', 'image-preview', 'prod-image-file', 'image-preview-text', '');
                 resetImagePreview('prod-gallery-data-1', 'gallery-preview-1', 'prod-gallery-file-1', null, '');
                 resetImagePreview('prod-gallery-data-2', 'gallery-preview-2', 'prod-gallery-file-2', null, '');
@@ -546,26 +590,24 @@
             modal.show();
         }
 
-        // 儲存商品
-        function saveProduct() {
+        // 🔥 寫入伺服器資料庫 (POST / PUT)
+        async function saveProduct() {
             const idVal = document.getElementById('prod-id').value;
             const mainImgData = document.getElementById('prod-image-data').value;
 
-            // 防呆：新增商品時，主圖片為必填
             if (!mainImgData) {
                 alert("⚠️ 請務必上傳一張主圖片！");
                 return;
             }
 
-            // 收集 Gallery 圖片 (過濾掉沒有上傳的空值)
             let newGallery = [
                 document.getElementById('prod-gallery-data-1').value,
                 document.getElementById('prod-gallery-data-2').value,
                 document.getElementById('prod-gallery-data-3').value
             ].filter(img => img !== "");
 
-            const newProduct = {
-                id: idVal ? parseInt(idVal) : Date.now(),
+            // 打包成 JSON 格式
+            const productData = {
                 name: document.getElementById('prod-name').value.trim(),
                 price: parseInt(document.getElementById('prod-price').value),
                 stock: parseInt(document.getElementById('prod-stock').value),
@@ -574,28 +616,63 @@
                 gallery: newGallery
             };
 
-            if (idVal) {
-                const index = adminProductsDB.findIndex(p => p.id === parseInt(idVal));
-                if (index > -1) adminProductsDB[index] = newProduct;
-            } else {
-                adminProductsDB.unshift(newProduct);
+            // 按鈕防連點保護
+            const btn = document.querySelector('#product-form button[type="submit"]');
+            const originalText = btn.innerText;
+            btn.disabled = true;
+            btn.innerText = "⏳ 伺服器傳輸中...";
+
+            try {
+                // 如果有 ID 就是修改(PUT)，沒有 ID 就是新增(POST)
+                const method = idVal ? 'PUT' : 'POST';
+                const url = idVal ? `${API_BASE_URL}/${idVal}` : API_BASE_URL;
+
+                const response = await fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(productData)
+                });
+
+                if (!response.ok) throw new Error('API 請求失敗');
+                const result = await response.json();
+
+                if (result.status === 'success') {
+                    alert(idVal ? "✅ 商品資料修改成功！" : "✅ 新增商品已寫入資料庫！");
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('productModal'));
+                    if (modal) modal.hide();
+
+                    // 成功後，要求伺服器重新發送最新的完整清單來更新畫面！
+                    await fetchProductsFromServer();
+                }
+            } catch (error) {
+                console.error("Save Error:", error);
+                alert("⛔ 儲存失敗！請檢查後端伺服器是否正常運作。");
+            } finally {
+                // 恢復按鈕狀態
+                btn.disabled = false;
+                btn.innerText = originalText;
             }
-
-            localStorage.setItem('adminProducts', JSON.stringify(adminProductsDB));
-            renderProductsTable();
-
-            const modal = bootstrap.Modal.getInstance(document.getElementById('productModal'));
-            if (modal) modal.hide();
-
-            alert("✅ 商品資料庫更新完成！\n(備註：前台頁面目前仍讀取 data.js，未來將進行資料庫同步)");
         }
 
-        // 刪除商品
-        function deleteProduct(id) {
-            if (confirm("⚠️ 警告：確定要將此商品從資料庫中永久刪除嗎？")) {
-                adminProductsDB = adminProductsDB.filter(p => p.id !== id);
-                localStorage.setItem('adminProducts', JSON.stringify(adminProductsDB));
-                renderProductsTable();
+        // 🔥 刪除伺服器商品 (DELETE)
+        async function deleteProduct(id) {
+            if (confirm("⚠️ 嚴重警告：確定要將此商品從「真實資料庫」中永久刪除嗎？此操作無法復原！")) {
+                try {
+                    const response = await fetch(`${API_BASE_URL}/${id}`, {
+                        method: 'DELETE'
+                    });
+
+                    if (!response.ok) throw new Error('API 請求失敗');
+                    const result = await response.json();
+
+                    if (result.status === 'success') {
+                        // 刪除成功後，重新整理畫面清單
+                        await fetchProductsFromServer();
+                    }
+                } catch (error) {
+                    console.error("Delete Error:", error);
+                    alert("⛔ 刪除失敗！請檢查後端伺服器是否正常運作。");
+                }
             }
         }
     </script>

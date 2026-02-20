@@ -1,16 +1,30 @@
 // js/main.js
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
 
     // ==========================================
-    // 🔥 0. 全域資料庫判定引擎 (Sync with Admin)
+    // 🔥 0. 全域資料庫判定引擎 (Sync with Python Backend)
     // ==========================================
-    // 優先讀取戰情室修改過的 adminProducts，如果沒有，才讀取預設的 productsData
     let appProducts = [];
-    if (localStorage.getItem('adminProducts')) {
-        appProducts = JSON.parse(localStorage.getItem('adminProducts'));
-    } else if (typeof productsData !== 'undefined') {
-        appProducts = productsData;
+    
+    try {
+        // 📞 打電話給 Python 餐廳 (API) 點餐
+        console.log("連線至 Python 伺服器中...");
+        const response = await fetch('http://localhost:8000/api/products');
+        const data = await response.json();
+        
+        if (data.status === "success") {
+            appProducts = data.data; // 把後端傳來的商品存起來！
+            console.log("✅ 成功從 Python 後端取得商品資料！", appProducts);
+        }
+    } catch (error) {
+        console.error("⚠️ 無法連線至後端伺服器，切換為本地備用資料庫...", error);
+        // 備用方案：如果後端沒開，退回使用 LocalStorage 或 data.js
+        if (localStorage.getItem('adminProducts')) {
+            appProducts = JSON.parse(localStorage.getItem('adminProducts'));
+        } else if (typeof productsData !== 'undefined') {
+            appProducts = productsData;
+        }
     }
 
     // ==========================================
