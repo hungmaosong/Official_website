@@ -18,6 +18,21 @@
     <link rel="stylesheet" href="../css/main.css">
 
     <style>
+        /* ==========================================
+           🔥 新增：全域反白文字顏色設定 (解決看不到字的問題)
+           ========================================== */
+        ::selection {
+            background-color: var(--accent);
+            /* 反白時的背景色變成科技青色 */
+            color: #000000;
+            /* 反白時的文字變成純黑，最清晰 */
+        }
+
+        ::-moz-selection {
+            background-color: var(--accent);
+            color: #000000;
+        }
+
         /* 戰情室專屬的微調樣式 */
         body {
             background-color: #020617;
@@ -68,6 +83,31 @@
             background-color: rgba(6, 182, 212, 0.1);
             color: var(--accent);
             border-left: 4px solid var(--accent);
+        }
+
+        /* 表格操作按鈕樣式 */
+        .btn-admin-action {
+            padding: 4px 10px;
+            font-size: 0.85rem;
+            border-radius: 6px;
+            margin-right: 5px;
+        }
+
+        /* 檔案上傳按鈕美化 */
+        input[type="file"]::file-selector-button {
+            background-color: var(--accent);
+            color: #000;
+            font-weight: bold;
+            border: none;
+            border-radius: 4px;
+            padding: 5px 15px;
+            margin-right: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        input[type="file"]::file-selector-button:hover {
+            background-color: #fff;
         }
     </style>
 </head>
@@ -165,19 +205,26 @@
 
                     <div class="tab-pane fade" id="v-pills-inventory" role="tabpanel">
                         <div class="tech-card p-4">
-                            <h4 class="mb-4" style="color: #fff; font-family: var(--font-title);">商品與庫存管理 <span
-                                    style="font-size: 0.9rem; color: var(--accent);">[ PRODUCTS_DB ]</span></h4>
-                            <p class="mb-4" style="color: #94a3b8;">💡 目前顯示為 data.js 的唯讀資料。未來進軍後端時，這裡將開放「一鍵補貨」與「修改價格」功能。
-                            </p>
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <h4 class="mb-0" style="color: #fff; font-family: var(--font-title);">商品與庫存管理 <span
+                                        style="font-size: 0.9rem; color: var(--accent);">[ PRODUCTS_DB ]</span></h4>
+                                <button class="btn btn-primary" onclick="openProductModal()"
+                                    style="border-radius: 50px; padding: 8px 20px; font-weight: bold;">
+                                    ➕ 新增商品
+                                </button>
+                            </div>
+                            <p class="mb-4" style="color: #94a3b8;">💡 系統已自動將 data.js 資料轉移至
+                                LocalStorage。您可以自由新增、編輯庫存與價格。</p>
                             <div class="table-responsive">
                                 <table class="table tech-table align-middle">
                                     <thead>
                                         <tr style="color: #cbd5e1;">
-                                            <th width="10%">ID</th>
-                                            <th width="40%">商品名稱</th>
-                                            <th width="20%">單價</th>
-                                            <th width="15%">目前庫存</th>
-                                            <th width="15%">狀態</th>
+                                            <th width="8%">ID</th>
+                                            <th width="32%">商品名稱</th>
+                                            <th width="15%">分類</th>
+                                            <th width="15%">單價</th>
+                                            <th width="10%">庫存</th>
+                                            <th width="20%">操作</th>
                                         </tr>
                                     </thead>
                                     <tbody id="admin-products-list">
@@ -192,11 +239,120 @@
         </div>
     </div>
 
+    <div class="modal fade" id="productModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content tech-modal">
+                <div class="modal-header border-bottom-0">
+                    <h5 class="modal-title tech-title" id="productModalLabel">⚙️ 商品設定 (PRODUCT CONFIG)</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="product-form">
+                        <input type="hidden" id="prod-id">
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3 input-group-tech">
+                                <label>商品名稱 (Name)</label>
+                                <input type="text" class="form-control" id="prod-name" required>
+                            </div>
+                            <div class="col-md-6 mb-3 input-group-tech">
+                                <label>所屬分類 (Category)</label>
+                                <select class="form-control" id="prod-category" required style="cursor: pointer;">
+                                    <option value="figure">景品模型 (figure)</option>
+                                    <option value="card">稀有卡片 (card)</option>
+                                    <option value="apparel">潮流服飾 (apparel)</option>
+                                    <option value="music">音樂周邊 (music)</option>
+                                    <option value="other">其他配件 (other)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3 input-group-tech">
+                                <label>單價 (Price)</label>
+                                <input type="number" class="form-control" id="prod-price" required min="0">
+                            </div>
+                            <div class="col-md-6 mb-3 input-group-tech">
+                                <label>庫存數量 (Stock)</label>
+                                <input type="number" class="form-control" id="prod-stock" required min="0">
+                            </div>
+                        </div>
+
+                        <hr style="border-color: rgba(255,255,255,0.2); margin: 20px 0;">
+                        <h6 style="color: var(--accent); margin-bottom: 15px;">📸 圖片上傳 (Images)</h6>
+
+                        <div class="mb-4 input-group-tech"
+                            style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; border: 1px dashed rgba(6, 182, 212, 0.3);">
+                            <label style="color: #fff;">主圖片上傳 (Main Image) - <span
+                                    style="color: #ef4444;">必填</span></label>
+                            <input type="file" class="form-control mb-2" id="prod-image-file" accept="image/*"
+                                style="background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.2);">
+                            <input type="hidden" id="prod-image-data" required>
+
+                            <div class="mt-2 text-center">
+                                <img id="image-preview" src=""
+                                    style="max-height: 120px; border-radius: 8px; display: none; border: 2px solid var(--accent); box-shadow: 0 0 10px rgba(6,182,212,0.3);">
+                                <div id="image-preview-text"
+                                    style="color: #64748b; font-size: 0.85rem; margin-top: 5px;">尚未選擇圖片</div>
+                            </div>
+                        </div>
+
+                        <label style="color: #fff; margin-bottom: 10px; display: block;">各角度展示圖 (Gallery) - <span
+                                style="color: #94a3b8;">選填，最多 3 張</span></label>
+                        <div class="row">
+                            <div class="col-md-4 mb-4 input-group-tech"
+                                style="background: rgba(0,0,0,0.1); padding: 10px; border-radius: 8px;">
+                                <label style="font-size: 0.85rem;">展示圖 1</label>
+                                <input type="file" class="form-control mb-2" id="prod-gallery-file-1" accept="image/*"
+                                    style="background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.1); padding: 4px; font-size: 0.8rem;">
+                                <input type="hidden" id="prod-gallery-data-1">
+                                <div class="text-center mt-1">
+                                    <img id="gallery-preview-1" src=""
+                                        style="max-height: 80px; border-radius: 4px; display: none; border: 1px solid var(--accent);">
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 mb-4 input-group-tech"
+                                style="background: rgba(0,0,0,0.1); padding: 10px; border-radius: 8px;">
+                                <label style="font-size: 0.85rem;">展示圖 2</label>
+                                <input type="file" class="form-control mb-2" id="prod-gallery-file-2" accept="image/*"
+                                    style="background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.1); padding: 4px; font-size: 0.8rem;">
+                                <input type="hidden" id="prod-gallery-data-2">
+                                <div class="text-center mt-1">
+                                    <img id="gallery-preview-2" src=""
+                                        style="max-height: 80px; border-radius: 4px; display: none; border: 1px solid var(--accent);">
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 mb-4 input-group-tech"
+                                style="background: rgba(0,0,0,0.1); padding: 10px; border-radius: 8px;">
+                                <label style="font-size: 0.85rem;">展示圖 3</label>
+                                <input type="file" class="form-control mb-2" id="prod-gallery-file-3" accept="image/*"
+                                    style="background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.1); padding: 4px; font-size: 0.8rem;">
+                                <input type="hidden" id="prod-gallery-data-3">
+                                <div class="text-center mt-1">
+                                    <img id="gallery-preview-3" src=""
+                                        style="max-height: 80px; border-radius: 4px; display: none; border: 1px solid var(--accent);">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-grid mt-2">
+                            <button type="submit" class="btn btn-login"
+                                style="font-size: 1.1rem; letter-spacing: 1px;">💾 儲存寫入資料庫 (SAVE)</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="../js/data.js"></script>
     <script>
-        // 戰情室專屬大腦：渲染資料庫內容
-        document.addEventListener('DOMContentLoaded', function () {
+        let adminProductsDB = [];
 
+        document.addEventListener('DOMContentLoaded', function () {
             // 1. 顯示即時時間
             setInterval(() => {
                 document.getElementById('current-time').innerText = new Date().toLocaleString('zh-TW', { hour12: false });
@@ -211,7 +367,6 @@
                 usersListHTML.innerHTML = `<tr><td colspan="6" class="text-center py-4" style="color: #94a3b8;">目前尚無特務註冊</td></tr>`;
             } else {
                 usersDB.forEach(user => {
-                    // 🔥 修正：表格內的字體強制加上 text-white，避免被背景吃掉
                     usersListHTML.innerHTML += `
                         <tr>
                             <td style="color: var(--accent); font-weight: bold;">${user.username}</td>
@@ -225,40 +380,224 @@
                 });
             }
 
-            // 3. 讀取並渲染「商品庫存庫」 (從 data.js 讀取)
-            if (typeof productsData !== 'undefined') {
-                const productsListHTML = document.getElementById('admin-products-list');
-                let lowStockCount = 0;
-
-                productsData.forEach(product => {
-                    // 計算低庫存商品數 (小於等於 5 算低庫存)
-                    if (product.stock <= 5) lowStockCount++;
-
-                    let statusBadge = product.stock === 0
-                        ? '<span class="badge bg-danger">缺貨中</span>'
-                        : (product.stock <= 5 ? '<span class="badge bg-warning text-dark">即將售罄</span>' : '<span class="badge bg-success">供貨正常</span>');
-
-                    // 🔥 修正 1：表格字體強制變白 (text-white)
-                    // 🔥 修正 2：圖片路徑直接用 product.image，不需要 replace，因為 admin.html 就在 pages 資料夾裡面！
-                    productsListHTML.innerHTML += `
-                        <tr>
-                            <td style="color: #94a3b8;">#${product.id.toString().padStart(3, '0')}</td>
-                            <td class="text-white">
-                                <div class="d-flex align-items-center gap-3">
-                                    <img src="${product.image}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1);">
-                                    ${product.name}
-                                </div>
-                            </td>
-                            <td class="text-white">NT$${product.price}</td>
-                            <td style="font-weight: bold; font-family: var(--font-title); color: ${product.stock <= 5 ? '#ef4444' : 'var(--accent)'};">${product.stock}</td>
-                            <td>${statusBadge}</td>
-                        </tr>
-                    `;
-                });
-
-                document.getElementById('stat-low-stock').innerText = lowStockCount;
+            // 3. 商品庫存系統 (動態讀寫)
+            if (!localStorage.getItem('adminProducts')) {
+                if (typeof productsData !== 'undefined') {
+                    localStorage.setItem('adminProducts', JSON.stringify(productsData));
+                } else {
+                    localStorage.setItem('adminProducts', JSON.stringify([]));
+                }
             }
+
+            adminProductsDB = JSON.parse(localStorage.getItem('adminProducts'));
+            renderProductsTable();
+
+            // 🔥 4. 建立共用的 FileReader (圖片轉 Base64) 引擎
+            function setupImageUpload(fileInputId, dataInputId, previewImgId, previewTextId = null) {
+                const fileInput = document.getElementById(fileInputId);
+                if (!fileInput) return;
+
+                fileInput.addEventListener('change', function (e) {
+                    const file = e.target.files[0];
+                    if (!file) return;
+
+                    if (file.size > 2 * 1024 * 1024) { // 限制 2MB
+                        alert("⚠️ 檔案過大！為避免瀏覽器儲存空間不足，請選擇 2MB 以下的圖片。");
+                        this.value = '';
+                        return;
+                    }
+
+                    const reader = new FileReader();
+                    reader.onload = function (event) {
+                        const base64String = event.target.result;
+                        document.getElementById(dataInputId).value = base64String;
+
+                        const previewImg = document.getElementById(previewImgId);
+                        previewImg.src = base64String;
+                        previewImg.style.display = 'inline-block';
+
+                        if (previewTextId) {
+                            const pText = document.getElementById(previewTextId);
+                            if (pText) pText.style.display = 'none';
+                        }
+                    };
+                    reader.readAsDataURL(file);
+                });
+            }
+
+            // 將引擎綁定到主圖與三張展示圖
+            setupImageUpload('prod-image-file', 'prod-image-data', 'image-preview', 'image-preview-text');
+            setupImageUpload('prod-gallery-file-1', 'prod-gallery-data-1', 'gallery-preview-1');
+            setupImageUpload('prod-gallery-file-2', 'prod-gallery-data-2', 'gallery-preview-2');
+            setupImageUpload('prod-gallery-file-3', 'prod-gallery-data-3', 'gallery-preview-3');
+
+            // 綁定表單送出事件
+            document.getElementById('product-form').addEventListener('submit', function (e) {
+                e.preventDefault();
+                saveProduct();
+            });
         });
+
+        // 渲染商品表格
+        function renderProductsTable() {
+            const productsListHTML = document.getElementById('admin-products-list');
+            let lowStockCount = 0;
+            productsListHTML.innerHTML = '';
+
+            const categoryMap = {
+                'figure': '景品模型', 'card': '稀有卡片', 'apparel': '潮流服飾', 'music': '音樂周邊', 'other': '其他配件'
+            };
+
+            adminProductsDB.forEach(product => {
+                if (product.stock <= 5) lowStockCount++;
+
+                let stockColor = product.stock <= 5 ? '#ef4444' : 'var(--accent)';
+                let catName = categoryMap[product.category] || product.category;
+
+                let galleryBadge = product.gallery && product.gallery.length > 0
+                    ? `<span class="badge bg-info text-dark" style="font-size: 0.7rem; margin-left: 5px;">+${product.gallery.length}圖</span>`
+                    : '';
+
+                productsListHTML.innerHTML += `
+                    <tr>
+                        <td style="color: #94a3b8;">#${product.id.toString().padStart(3, '0')}</td>
+                        <td class="text-white">
+                            <div class="d-flex align-items-center gap-3">
+                                <img src="${product.image}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1);" onerror="this.src='../assets/images/logo.png'">
+                                <div>
+                                    ${product.name}
+                                    <div class="mt-1">${galleryBadge}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="text-white"><small class="badge bg-secondary">${catName}</small></td>
+                        <td class="text-white">NT$${product.price}</td>
+                        <td style="font-weight: bold; font-family: var(--font-title); color: ${stockColor};">${product.stock}</td>
+                        <td>
+                            <button class="btn btn-outline-info btn-admin-action" onclick="openProductModal(${product.id})">✏️ 編輯</button>
+                            <button class="btn btn-outline-danger btn-admin-action" onclick="deleteProduct(${product.id})">🗑️ 刪除</button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            document.getElementById('stat-low-stock').innerText = lowStockCount;
+        }
+
+        // 輔助函數：用來重置預覽區塊
+        function resetImagePreview(dataId, previewId, fileId, textId = null, imgUrl = '') {
+            document.getElementById(dataId).value = imgUrl;
+            document.getElementById(fileId).value = ''; // 清空檔案選擇器
+            const previewImg = document.getElementById(previewId);
+
+            if (imgUrl) {
+                previewImg.src = imgUrl;
+                previewImg.style.display = 'inline-block';
+                if (textId) document.getElementById(textId).style.display = 'none';
+            } else {
+                previewImg.src = '';
+                previewImg.style.display = 'none';
+                if (textId) document.getElementById(textId).style.display = 'block';
+            }
+        }
+
+        // 開啟 Modal
+        function openProductModal(id = null) {
+            const modalTitle = document.getElementById('productModalLabel');
+            const form = document.getElementById('product-form');
+            form.reset();
+
+            if (id !== null) {
+                // 編輯模式
+                modalTitle.innerText = "⚙️ 編輯商品 (EDIT CONFIG)";
+                const product = adminProductsDB.find(p => p.id === id);
+                if (product) {
+                    document.getElementById('prod-id').value = product.id;
+                    document.getElementById('prod-name').value = product.name;
+                    document.getElementById('prod-price').value = product.price;
+                    document.getElementById('prod-stock').value = product.stock;
+                    document.getElementById('prod-category').value = product.category;
+
+                    // 填入圖片並顯示預覽
+                    resetImagePreview('prod-image-data', 'image-preview', 'prod-image-file', 'image-preview-text', product.image);
+
+                    // 填入 Gallery 圖片並顯示預覽
+                    let g1 = product.gallery && product.gallery[0] ? product.gallery[0] : '';
+                    let g2 = product.gallery && product.gallery[1] ? product.gallery[1] : '';
+                    let g3 = product.gallery && product.gallery[2] ? product.gallery[2] : '';
+
+                    resetImagePreview('prod-gallery-data-1', 'gallery-preview-1', 'prod-gallery-file-1', null, g1);
+                    resetImagePreview('prod-gallery-data-2', 'gallery-preview-2', 'prod-gallery-file-2', null, g2);
+                    resetImagePreview('prod-gallery-data-3', 'gallery-preview-3', 'prod-gallery-file-3', null, g3);
+                }
+            } else {
+                // 新增模式
+                modalTitle.innerText = "➕ 新增商品 (NEW PRODUCT)";
+                document.getElementById('prod-id').value = '';
+
+                // 清空所有預覽與隱藏欄位
+                resetImagePreview('prod-image-data', 'image-preview', 'prod-image-file', 'image-preview-text', '');
+                resetImagePreview('prod-gallery-data-1', 'gallery-preview-1', 'prod-gallery-file-1', null, '');
+                resetImagePreview('prod-gallery-data-2', 'gallery-preview-2', 'prod-gallery-file-2', null, '');
+                resetImagePreview('prod-gallery-data-3', 'gallery-preview-3', 'prod-gallery-file-3', null, '');
+            }
+
+            const modal = new bootstrap.Modal(document.getElementById('productModal'));
+            modal.show();
+        }
+
+        // 儲存商品
+        function saveProduct() {
+            const idVal = document.getElementById('prod-id').value;
+            const mainImgData = document.getElementById('prod-image-data').value;
+
+            // 防呆：新增商品時，主圖片為必填
+            if (!mainImgData) {
+                alert("⚠️ 請務必上傳一張主圖片！");
+                return;
+            }
+
+            // 收集 Gallery 圖片 (過濾掉沒有上傳的空值)
+            let newGallery = [
+                document.getElementById('prod-gallery-data-1').value,
+                document.getElementById('prod-gallery-data-2').value,
+                document.getElementById('prod-gallery-data-3').value
+            ].filter(img => img !== "");
+
+            const newProduct = {
+                id: idVal ? parseInt(idVal) : Date.now(),
+                name: document.getElementById('prod-name').value.trim(),
+                price: parseInt(document.getElementById('prod-price').value),
+                stock: parseInt(document.getElementById('prod-stock').value),
+                category: document.getElementById('prod-category').value,
+                image: mainImgData,
+                gallery: newGallery
+            };
+
+            if (idVal) {
+                const index = adminProductsDB.findIndex(p => p.id === parseInt(idVal));
+                if (index > -1) adminProductsDB[index] = newProduct;
+            } else {
+                adminProductsDB.unshift(newProduct);
+            }
+
+            localStorage.setItem('adminProducts', JSON.stringify(adminProductsDB));
+            renderProductsTable();
+
+            const modal = bootstrap.Modal.getInstance(document.getElementById('productModal'));
+            if (modal) modal.hide();
+
+            alert("✅ 商品資料庫更新完成！\n(備註：前台頁面目前仍讀取 data.js，未來將進行資料庫同步)");
+        }
+
+        // 刪除商品
+        function deleteProduct(id) {
+            if (confirm("⚠️ 警告：確定要將此商品從資料庫中永久刪除嗎？")) {
+                adminProductsDB = adminProductsDB.filter(p => p.id !== id);
+                localStorage.setItem('adminProducts', JSON.stringify(adminProductsDB));
+                renderProductsTable();
+            }
+        }
     </script>
 </body>
 
