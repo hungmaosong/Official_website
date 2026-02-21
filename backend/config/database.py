@@ -2,14 +2,20 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 
-# 資料庫網址 (sqlite:/// 代表使用本地端的 sqlite 檔案)
-# 這會在你的 backend 資料夾下產生一個 kcg_database.db 的檔案
-SQLALCHEMY_DATABASE_URL = "sqlite:///./kcg_database.db"
+# # 資料庫網址 (sqlite:/// 代表使用本地端的 sqlite 檔案)
+# # 這會在你的 backend 資料夾下產生一個 kcg_database.db 的檔案
+# SQLALCHEMY_DATABASE_URL = "sqlite:///./kcg_database.db"
 
-# 建立引擎 (connect_args 是專門給 SQLite 用的設定，防止多執行緒報錯)
-engine = create_engine(
-    SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
-)
+# # 建立引擎 (connect_args 是專門給 SQLite 用的設定，防止多執行緒報錯)
+# engine = create_engine(
+#     SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
+# )
+
+# 🔥 換成 Neon 的 PostgreSQL 連線網址
+SQLALCHEMY_DATABASE_URL = "postgresql://neondb_owner:npg_nDOR9VsJij3f@ep-sweet-snow-a10qd35r-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
+
+# ⚠️ 注意：把 connect_args={"check_same_thread": False} 刪掉，PostgreSQL 不需要這個
+engine = create_engine(SQLALCHEMY_DATABASE_URL)
 
 # 建立與資料庫溝通的 Session (對話期)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

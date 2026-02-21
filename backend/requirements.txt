@@ -1,5 +1,5 @@
-Flask
-Flask-SQLAlchemy
-Flask-Migrate
-python-dotenv
-PyMySQL
+fastapi
+uvicorn
+sqlalchemy
+pydantic
+psycopg2-binary
