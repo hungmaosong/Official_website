@@ -50,6 +50,8 @@
             padding: 20px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
             transition: transform 0.3s;
+            height: 100%;
+            /* 確保所有卡片高度一致 */
         }
 
         .stat-card:hover {
@@ -60,7 +62,8 @@
 
         .stat-value {
             font-family: var(--font-title);
-            font-size: 2.5rem;
+            font-size: 2.2rem;
+            /* 稍微縮小字體以適應 5 欄排版 */
             color: var(--accent);
             font-weight: 700;
         }
@@ -100,6 +103,33 @@
 
         input[type="file"]::file-selector-button:hover {
             background-color: #fff;
+        }
+
+        /* 自訂 5 欄位網格系統 */
+        .col-5-card {
+            width: 20%;
+            padding: 0 10px;
+        }
+
+        @media (max-width: 1200px) {
+            .col-5-card {
+                width: 33.33%;
+                margin-bottom: 20px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .col-5-card {
+                width: 50%;
+                margin-bottom: 20px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .col-5-card {
+                width: 100%;
+                margin-bottom: 20px;
+            }
         }
     </style>
 </head>
@@ -147,29 +177,36 @@
 
                 <div class="tab-content" id="v-pills-tabContent">
                     <div class="tab-pane fade show active" id="v-pills-dashboard" role="tabpanel">
-                        <div class="row g-4 mb-5">
-                            <div class="col-md-3">
+                        <div class="d-flex flex-wrap mb-5" style="margin: 0 -10px;">
+                            <div class="col-5-card">
                                 <div class="stat-card">
                                     <div class="mb-2" style="color: #cbd5e1; font-weight: 600;">註冊會員總數</div>
                                     <div class="stat-value" id="stat-users">0</div>
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-5-card">
                                 <div class="stat-card">
                                     <div class="mb-2" style="color: #cbd5e1; font-weight: 600;">待處理訂單</div>
                                     <div class="stat-value" id="stat-orders" style="color: #38bdf8;">0</div>
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-5-card">
                                 <div class="stat-card">
                                     <div class="mb-2" style="color: #cbd5e1; font-weight: 600;">低庫存警報</div>
                                     <div class="stat-value" id="stat-low-stock" style="color: #ef4444;">0</div>
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-5-card">
+                                <div class="stat-card">
+                                    <div class="mb-2" style="color: #cbd5e1; font-weight: 600;">累積營收</div>
+                                    <div class="stat-value" id="stat-revenue" style="color: #22c55e;">NT$ 0</div>
+                                </div>
+                            </div>
+                            <div class="col-5-card">
                                 <div class="stat-card">
                                     <div class="mb-2" style="color: #cbd5e1; font-weight: 600;">伺服器狀態</div>
-                                    <div class="stat-value" id="stat-server" style="color: #f59e0b; font-size: 1.8rem;">
+                                    <div class="stat-value" id="stat-server"
+                                        style="color: #f59e0b; font-size: 1.5rem; line-height: 1.5;">
                                         連線中...</div>
                                 </div>
                             </div>
@@ -363,22 +400,80 @@
                 } catch (e) { console.error(e); }
             }
 
-            // 🔥 2. 訂單管理 API
+            // 🔥 2. 訂單管理 API (精確計算待處理與營收)
             async function fetchOrdersFromServer() {
                 try {
                     const response = await fetch('http://localhost:8000/api/orders');
                     const result = await response.json();
                     if (result.status === 'success') {
-                        document.getElementById('stat-orders').innerText = result.data.length;
+                        const ordersDB = result.data;
+
+                        // --- 儀表板數據更新 ---
+                        // 1. 計算待處理訂單數 (狀態為: 準備出貨)
+                        const pendingOrders = ordersDB.filter(o => o.status === '準備出貨').length;
+                        document.getElementById('stat-orders').innerText = pendingOrders;
+
+                        // 2. 計算累積營收 (排除已取消)
+                        let totalRevenue = 0;
+                        ordersDB.forEach(order => {
+                            if (order.status !== '已取消') {
+                                totalRevenue += order.total_amount;
+                            }
+                        });
+                        document.getElementById('stat-revenue').innerText = `NT$ ${totalRevenue.toLocaleString()}`;
+
+                        // ---------------------
                         const ordersList = document.getElementById('admin-orders-list');
                         ordersList.innerHTML = '';
-                        result.data.forEach(order => {
+
+                        const statusOptions = ['準備出貨', '已出貨', '已完成', '已取消'];
+
+                        ordersDB.forEach(order => {
                             const itemsSummary = order.items.map(i => `${i.product_name} x${i.quantity}`).join('<br>');
-                            ordersList.innerHTML += `<tr><td style="color: var(--accent); font-weight: bold; font-family: 'Orbitron';">${order.order_number}</td><td class="text-white">${order.shipping_name} <br><small style="color:#94a3b8;">(@${order.username})</small></td><td class="text-white" style="font-size: 0.85rem;">${itemsSummary}</td><td style="color: var(--accent);">NT$${order.total_amount}</td><td><span class="badge bg-info text-dark">${order.status}</span></td><td style="color: #94a3b8;"><small>${order.created_at}</small></td></tr>`;
+
+                            let selectHTML = `<select class="form-select form-select-sm" style="background: rgba(0,0,0,0.5); color: #fff; border: 1px solid var(--accent); cursor: pointer;" onchange="updateOrderStatus('${order.order_number}', this.value)">`;
+                            statusOptions.forEach(opt => {
+                                let selected = order.status === opt ? 'selected' : '';
+                                selectHTML += `<option value="${opt}" ${selected}>${opt}</option>`;
+                            });
+                            selectHTML += `</select>`;
+
+                            ordersList.innerHTML += `
+                                <tr>
+                                    <td style="color: var(--accent); font-weight: bold; font-family: 'Orbitron';">${order.order_number}</td>
+                                    <td class="text-white">${order.shipping_name} <br><small style="color:#94a3b8;">(@${order.username})</small></td>
+                                    <td class="text-white" style="font-size: 0.85rem;">${itemsSummary}</td>
+                                    <td style="color: var(--accent); font-weight: bold;">NT$${order.order_amount || order.total_amount}</td>
+                                    <td>${selectHTML}</td>
+                                    <td style="color: #94a3b8;"><small>${order.created_at}</small></td>
+                                </tr>
+                            `;
                         });
                     }
                 } catch (e) { console.error(e); }
             }
+
+            // 修改訂單狀態的觸發函數
+            window.updateOrderStatus = async function (orderNumber, newStatus) {
+                try {
+                    const response = await fetch(`http://localhost:8000/api/orders/${orderNumber}/status`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ status: newStatus })
+                    });
+
+                    const result = await response.json();
+                    if (response.ok && result.status === 'success') {
+                        // 狀態更新成功後，重新抓取資料以更新「待處理」與「累積營收」
+                        fetchOrdersFromServer();
+                    } else {
+                        alert("⛔ 狀態更新失敗：" + result.detail);
+                    }
+                } catch (error) {
+                    console.error("Update Status Error:", error);
+                    alert("⚠️ 伺服器連線錯誤！");
+                }
+            };
 
             // 🔥 3. 圖片上傳引擎
             function setupImageUpload(fileInputId, dataInputId, previewImgId, previewTextId = null) {
@@ -428,11 +523,11 @@
                     adminProductsDB = result.data;
                     renderProductsTable();
                     const s = document.getElementById('stat-server');
-                    s.innerText = '✅ 連線正常'; s.style.color = '#22c55e';
+                    s.innerHTML = '✅ <br>連線正常'; s.style.color = '#22c55e';
                 }
             } catch (e) {
                 const s = document.getElementById('stat-server');
-                s.innerText = '❌ 連線失敗'; s.style.color = '#ef4444';
+                s.innerHTML = '❌ <br>連線失敗'; s.style.color = '#ef4444';
             }
         }
 

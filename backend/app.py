@@ -72,6 +72,10 @@ class OrderCreate(BaseModel):
     total_amount: int
     items: List[CartItem]
 
+# 👉 新增：用來接收更新訂單狀態的格式
+class OrderStatusUpdate(BaseModel):
+    status: str
+
 # ==========================================
 # 📦 初始裝備資料 (只在空資料庫時執行)
 # ==========================================
@@ -321,3 +325,17 @@ def get_all_orders(db: Session = Depends(get_db)):
         })
         
     return {"status": "success", "data": results}
+
+# 10. 更新訂單狀態 (PUT) - 戰情室專用
+@app.put("/api/orders/{order_number}/status")
+def update_order_status(order_number: str, status_data: OrderStatusUpdate, db: Session = Depends(get_db)):
+    db_order = db.query(Order).filter(Order.order_number == order_number).first()
+    
+    if not db_order:
+        raise HTTPException(status_code=404, detail="找不到該筆訂單")
+
+    # 更新狀態
+    db_order.status = status_data.status
+    db.commit()
+    
+    return {"status": "success", "message": f"訂單 {order_number} 狀態已更新為：{status_data.status}"}
