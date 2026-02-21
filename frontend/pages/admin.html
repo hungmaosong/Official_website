@@ -377,7 +377,7 @@
     </div>
 
     <script>
-        const API_BASE_URL = 'http://localhost:8000/api/products';
+        const API_BASE_URL = 'https://kcg-api.onrender.com/api/products';
         let adminProductsDB = [];
 
         document.addEventListener('DOMContentLoaded', function () {
@@ -386,7 +386,7 @@
             // 🔥 1. 會員名冊 API
             async function fetchUsersFromServer() {
                 try {
-                    const response = await fetch('http://localhost:8000/api/users');
+                    const response = await fetch('https://kcg-api.onrender.com/api/users');
                     const result = await response.json();
                     if (result.status === 'success') {
                         document.getElementById('stat-users').innerText = result.data.length;
@@ -403,7 +403,7 @@
             // 🔥 2. 訂單管理 API (精確計算待處理與營收)
             async function fetchOrdersFromServer() {
                 try {
-                    const response = await fetch('http://localhost:8000/api/orders');
+                    const response = await fetch('https://kcg-api.onrender.com/api/orders');
                     const result = await response.json();
                     if (result.status === 'success') {
                         const ordersDB = result.data;
@@ -456,7 +456,7 @@
             // 修改訂單狀態的觸發函數
             window.updateOrderStatus = async function (orderNumber, newStatus) {
                 try {
-                    const response = await fetch(`http://localhost:8000/api/orders/${orderNumber}/status`, {
+                    const response = await fetch(`https://kcg-api.onrender.com/api/orders/${orderNumber}/status`, {
                         method: 'PUT',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ status: newStatus })
