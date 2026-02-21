@@ -18,9 +18,6 @@
     <link rel="stylesheet" href="../css/main.css">
 
     <style>
-        /* ==========================================
-           🔥 新增：全域反白文字顏色設定 (解決看不到字的問題)
-           ========================================== */
         ::selection {
             background-color: var(--accent);
             color: #000000;
@@ -31,7 +28,6 @@
             color: #000000;
         }
 
-        /* 戰情室專屬的微調樣式 */
         body {
             background-color: #020617;
         }
@@ -83,7 +79,6 @@
             border-left: 4px solid var(--accent);
         }
 
-        /* 表格操作按鈕樣式 */
         .btn-admin-action {
             padding: 4px 10px;
             font-size: 0.85rem;
@@ -91,7 +86,6 @@
             margin-right: 5px;
         }
 
-        /* 檔案上傳按鈕美化 */
         input[type="file"]::file-selector-button {
             background-color: var(--accent);
             color: #000;
@@ -133,8 +127,10 @@
                         data-bs-target="#v-pills-dashboard" type="button" role="tab">📊 儀表板</button>
                     <button class="nav-link" id="v-pills-users-tab" data-bs-toggle="pill"
                         data-bs-target="#v-pills-users" type="button" role="tab">🕵️‍♂️ 會員名冊</button>
+                    <button class="nav-link" id="v-pills-orders-tab" data-bs-toggle="pill"
+                        data-bs-target="#v-pills-orders" type="button" role="tab">📦 訂單管理</button>
                     <button class="nav-link" id="v-pills-inventory-tab" data-bs-toggle="pill"
-                        data-bs-target="#v-pills-inventory" type="button" role="tab">📦 商品庫存</button>
+                        data-bs-target="#v-pills-inventory" type="button" role="tab">🛠️ 商品庫存</button>
                 </div>
                 <div class="mt-5 text-center">
                     <a href="../index.html" class="btn btn-outline-secondary btn-sm w-100">返回首頁</a>
@@ -150,7 +146,6 @@
                 </div>
 
                 <div class="tab-content" id="v-pills-tabContent">
-
                     <div class="tab-pane fade show active" id="v-pills-dashboard" role="tabpanel">
                         <div class="row g-4 mb-5">
                             <div class="col-md-3">
@@ -161,14 +156,14 @@
                             </div>
                             <div class="col-md-3">
                                 <div class="stat-card">
-                                    <div class="mb-2" style="color: #cbd5e1; font-weight: 600;">低庫存警報</div>
-                                    <div class="stat-value" id="stat-low-stock" style="color: #ef4444;">0</div>
+                                    <div class="mb-2" style="color: #cbd5e1; font-weight: 600;">待處理訂單</div>
+                                    <div class="stat-value" id="stat-orders" style="color: #38bdf8;">0</div>
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <div class="stat-card">
-                                    <div class="mb-2" style="color: #cbd5e1; font-weight: 600;">累積營收</div>
-                                    <div class="stat-value" style="color: #22c55e;">NT$ ---</div>
+                                    <div class="mb-2" style="color: #cbd5e1; font-weight: 600;">低庫存警報</div>
+                                    <div class="stat-value" id="stat-low-stock" style="color: #ef4444;">0</div>
                                 </div>
                             </div>
                             <div class="col-md-3">
@@ -197,8 +192,29 @@
                                             <th>註冊時間</th>
                                         </tr>
                                     </thead>
-                                    <tbody id="admin-users-list">
-                                    </tbody>
+                                    <tbody id="admin-users-list"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane fade" id="v-pills-orders" role="tabpanel">
+                        <div class="tech-card p-4">
+                            <h4 class="mb-4" style="color: #fff; font-family: var(--font-title);">訂單處理中心 <span
+                                    style="font-size: 0.9rem; color: var(--accent);">[ ORDERS_LOG ]</span></h4>
+                            <div class="table-responsive">
+                                <table class="table tech-table align-middle">
+                                    <thead>
+                                        <tr style="color: #cbd5e1;">
+                                            <th>訂單編號</th>
+                                            <th>收件人</th>
+                                            <th>購買項目</th>
+                                            <th>總金額</th>
+                                            <th>狀態</th>
+                                            <th>下單時間</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="admin-orders-list"></tbody>
                                 </table>
                             </div>
                         </div>
@@ -210,12 +226,8 @@
                                 <h4 class="mb-0" style="color: #fff; font-family: var(--font-title);">商品與庫存管理 <span
                                         style="font-size: 0.9rem; color: var(--accent);">[ PRODUCTS_DB ]</span></h4>
                                 <button class="btn btn-primary" onclick="openProductModal()"
-                                    style="border-radius: 50px; padding: 8px 20px; font-weight: bold;">
-                                    ➕ 新增商品
-                                </button>
+                                    style="border-radius: 50px; padding: 8px 20px; font-weight: bold;">➕ 新增商品</button>
                             </div>
-                            <p class="mb-4" style="color: #22c55e; font-weight: bold;">✅ 已切換至後端模式！所有操作將直接寫入 Python
-                                真實資料庫。</p>
                             <div class="table-responsive">
                                 <table class="table tech-table align-middle">
                                     <thead>
@@ -228,13 +240,11 @@
                                             <th width="20%">操作</th>
                                         </tr>
                                     </thead>
-                                    <tbody id="admin-products-list">
-                                    </tbody>
+                                    <tbody id="admin-products-list"></tbody>
                                 </table>
                             </div>
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>
@@ -251,38 +261,28 @@
                 <div class="modal-body">
                     <form id="product-form">
                         <input type="hidden" id="prod-id">
-
                         <div class="row">
-                            <div class="col-md-6 mb-3 input-group-tech">
-                                <label>商品名稱 (Name)</label>
-                                <input type="text" class="form-control" id="prod-name" required>
-                            </div>
+                            <div class="col-md-6 mb-3 input-group-tech"><label>商品名稱 (Name)</label><input type="text"
+                                    class="form-control" id="prod-name" required></div>
                             <div class="col-md-6 mb-3 input-group-tech">
                                 <label>所屬分類 (Category)</label>
                                 <select class="form-control" id="prod-category" required style="cursor: pointer;">
                                     <option value="figure">景品模型 (figure)</option>
                                     <option value="card">稀有卡片 (card)</option>
-                                    <option value="apparel">潮流服飾 (apparel)</option>
+                                    <option value="clothes">潮流服飾 (clothes)</option>
                                     <option value="music">音樂周邊 (music)</option>
                                     <option value="other">其他配件 (other)</option>
                                 </select>
                             </div>
                         </div>
-
                         <div class="row">
-                            <div class="col-md-6 mb-3 input-group-tech">
-                                <label>單價 (Price)</label>
-                                <input type="number" class="form-control" id="prod-price" required min="0">
-                            </div>
-                            <div class="col-md-6 mb-3 input-group-tech">
-                                <label>庫存數量 (Stock)</label>
-                                <input type="number" class="form-control" id="prod-stock" required min="0">
-                            </div>
+                            <div class="col-md-6 mb-3 input-group-tech"><label>單價 (Price)</label><input type="number"
+                                    class="form-control" id="prod-price" required min="0"></div>
+                            <div class="col-md-6 mb-3 input-group-tech"><label>庫存數量 (Stock)</label><input type="number"
+                                    class="form-control" id="prod-stock" required min="0"></div>
                         </div>
-
                         <hr style="border-color: rgba(255,255,255,0.2); margin: 20px 0;">
                         <h6 style="color: var(--accent); margin-bottom: 15px;">📸 圖片上傳 (Images)</h6>
-
                         <div class="mb-4 input-group-tech"
                             style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; border: 1px dashed rgba(6, 182, 212, 0.3);">
                             <label style="color: #fff;">主圖片上傳 (Main Image) - <span
@@ -290,7 +290,6 @@
                             <input type="file" class="form-control mb-2" id="prod-image-file" accept="image/*"
                                 style="background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.2);">
                             <input type="hidden" id="prod-image-data" required>
-
                             <div class="mt-2 text-center">
                                 <img id="image-preview" src=""
                                     style="max-height: 120px; border-radius: 8px; display: none; border: 2px solid var(--accent); box-shadow: 0 0 10px rgba(6,182,212,0.3);">
@@ -298,7 +297,6 @@
                                     style="color: #64748b; font-size: 0.85rem; margin-top: 5px;">尚未選擇圖片</div>
                             </div>
                         </div>
-
                         <label style="color: #fff; margin-bottom: 10px; display: block;">各角度展示圖 (Gallery) - <span
                                 style="color: #94a3b8;">選填，最多 3 張</span></label>
                         <div class="row">
@@ -308,114 +306,95 @@
                                 <input type="file" class="form-control mb-2" id="prod-gallery-file-1" accept="image/*"
                                     style="background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.1); padding: 4px; font-size: 0.8rem;">
                                 <input type="hidden" id="prod-gallery-data-1">
-                                <div class="text-center mt-1">
-                                    <img id="gallery-preview-1" src=""
+                                <div class="text-center mt-1"><img id="gallery-preview-1" src=""
                                         style="max-height: 80px; border-radius: 4px; display: none; border: 1px solid var(--accent);">
                                 </div>
                             </div>
-
                             <div class="col-md-4 mb-4 input-group-tech"
                                 style="background: rgba(0,0,0,0.1); padding: 10px; border-radius: 8px;">
                                 <label style="font-size: 0.85rem;">展示圖 2</label>
                                 <input type="file" class="form-control mb-2" id="prod-gallery-file-2" accept="image/*"
                                     style="background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.1); padding: 4px; font-size: 0.8rem;">
                                 <input type="hidden" id="prod-gallery-data-2">
-                                <div class="text-center mt-1">
-                                    <img id="gallery-preview-2" src=""
+                                <div class="text-center mt-1"><img id="gallery-preview-2" src=""
                                         style="max-height: 80px; border-radius: 4px; display: none; border: 1px solid var(--accent);">
                                 </div>
                             </div>
-
                             <div class="col-md-4 mb-4 input-group-tech"
                                 style="background: rgba(0,0,0,0.1); padding: 10px; border-radius: 8px;">
                                 <label style="font-size: 0.85rem;">展示圖 3</label>
                                 <input type="file" class="form-control mb-2" id="prod-gallery-file-3" accept="image/*"
                                     style="background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.1); padding: 4px; font-size: 0.8rem;">
                                 <input type="hidden" id="prod-gallery-data-3">
-                                <div class="text-center mt-1">
-                                    <img id="gallery-preview-3" src=""
+                                <div class="text-center mt-1"><img id="gallery-preview-3" src=""
                                         style="max-height: 80px; border-radius: 4px; display: none; border: 1px solid var(--accent);">
                                 </div>
                             </div>
                         </div>
-
-                        <div class="d-grid mt-2">
-                            <button type="submit" class="btn btn-login"
-                                style="font-size: 1.1rem; letter-spacing: 1px;">💾 儲存寫入資料庫 (SAVE)</button>
-                        </div>
+                        <div class="d-grid mt-2"><button type="submit" class="btn btn-login"
+                                style="font-size: 1.1rem; letter-spacing: 1px;">💾 儲存寫入資料庫 (SAVE)</button></div>
                     </form>
                 </div>
             </div>
         </div>
     </div>
 
-    <script src="../js/data.js"></script>
     <script>
-        // ==========================================
-        // 🔥 後端 API 連線設定
-        // ==========================================
         const API_BASE_URL = 'http://localhost:8000/api/products';
         let adminProductsDB = [];
 
         document.addEventListener('DOMContentLoaded', function () {
-            // 1. 顯示即時時間
-            setInterval(() => {
-                document.getElementById('current-time').innerText = new Date().toLocaleString('zh-TW', { hour12: false });
-            }, 1000);
+            setInterval(() => { document.getElementById('current-time').innerText = new Date().toLocaleString('zh-TW', { hour12: false }); }, 1000);
 
-            // 2. 讀取並渲染「會員資料庫」
-            let usersDB = JSON.parse(localStorage.getItem('usersDatabase')) || [];
-            document.getElementById('stat-users').innerText = usersDB.length;
-
-            const usersListHTML = document.getElementById('admin-users-list');
-            if (usersDB.length === 0) {
-                usersListHTML.innerHTML = `<tr><td colspan="6" class="text-center py-4" style="color: #94a3b8;">目前尚無特務註冊</td></tr>`;
-            } else {
-                usersDB.forEach(user => {
-                    usersListHTML.innerHTML += `
-                        <tr>
-                            <td style="color: var(--accent); font-weight: bold;">${user.username}</td>
-                            <td class="text-white">${user.name || '-'}</td>
-                            <td class="text-white">${user.phone || '-'}</td>
-                            <td class="text-white">${user.email || '-'}</td>
-                            <td class="text-white"><small>${user.store_711 || '-'}</small></td>
-                            <td style="color: #94a3b8;"><small>${user.registerTime || '-'}</small></td>
-                        </tr>
-                    `;
-                });
+            // 🔥 1. 會員名冊 API
+            async function fetchUsersFromServer() {
+                try {
+                    const response = await fetch('http://localhost:8000/api/users');
+                    const result = await response.json();
+                    if (result.status === 'success') {
+                        document.getElementById('stat-users').innerText = result.data.length;
+                        const usersList = document.getElementById('admin-users-list');
+                        usersList.innerHTML = '';
+                        result.data.forEach(user => {
+                            let roleBadge = user.role === 'admin' ? '<span class="badge bg-danger ms-2" style="font-size:0.6rem;">ADMIN</span>' : '';
+                            usersList.innerHTML += `<tr><td style="color: var(--accent); font-weight: bold;">${user.username} ${roleBadge}</td><td class="text-white">${user.name || '-'}</td><td class="text-white">${user.phone || '-'}</td><td class="text-white">${user.email || '-'}</td><td class="text-white"><small>${user.store_711 || '-'}</small></td><td style="color: #94a3b8;"><small>${user.created_at || '-'}</small></td></tr>`;
+                        });
+                    }
+                } catch (e) { console.error(e); }
             }
 
-            // 🔥 3. 初次載入：向 Python 伺服器請求商品資料庫
-            fetchProductsFromServer();
+            // 🔥 2. 訂單管理 API
+            async function fetchOrdersFromServer() {
+                try {
+                    const response = await fetch('http://localhost:8000/api/orders');
+                    const result = await response.json();
+                    if (result.status === 'success') {
+                        document.getElementById('stat-orders').innerText = result.data.length;
+                        const ordersList = document.getElementById('admin-orders-list');
+                        ordersList.innerHTML = '';
+                        result.data.forEach(order => {
+                            const itemsSummary = order.items.map(i => `${i.product_name} x${i.quantity}`).join('<br>');
+                            ordersList.innerHTML += `<tr><td style="color: var(--accent); font-weight: bold; font-family: 'Orbitron';">${order.order_number}</td><td class="text-white">${order.shipping_name} <br><small style="color:#94a3b8;">(@${order.username})</small></td><td class="text-white" style="font-size: 0.85rem;">${itemsSummary}</td><td style="color: var(--accent);">NT$${order.total_amount}</td><td><span class="badge bg-info text-dark">${order.status}</span></td><td style="color: #94a3b8;"><small>${order.created_at}</small></td></tr>`;
+                        });
+                    }
+                } catch (e) { console.error(e); }
+            }
 
-            // 4. 建立共用的 FileReader (圖片轉 Base64) 引擎
+            // 🔥 3. 圖片上傳引擎
             function setupImageUpload(fileInputId, dataInputId, previewImgId, previewTextId = null) {
                 const fileInput = document.getElementById(fileInputId);
                 if (!fileInput) return;
-
                 fileInput.addEventListener('change', function (e) {
                     const file = e.target.files[0];
                     if (!file) return;
-
-                    if (file.size > 2 * 1024 * 1024) {
-                        alert("⚠️ 檔案過大！為避免伺服器負載，請選擇 2MB 以下的圖片。");
-                        this.value = '';
-                        return;
-                    }
-
+                    if (file.size > 2 * 1024 * 1024) { alert("⚠️ 檔案過大！請選擇 2MB 以下圖片。"); this.value = ''; return; }
                     const reader = new FileReader();
-                    reader.onload = function (event) {
-                        const base64String = event.target.result;
-                        document.getElementById(dataInputId).value = base64String;
-
-                        const previewImg = document.getElementById(previewImgId);
-                        previewImg.src = base64String;
-                        previewImg.style.display = 'inline-block';
-
-                        if (previewTextId) {
-                            const pText = document.getElementById(previewTextId);
-                            if (pText) pText.style.display = 'none';
-                        }
+                    reader.onload = (ev) => {
+                        const base64 = ev.target.result;
+                        document.getElementById(dataInputId).value = base64;
+                        const preview = document.getElementById(previewImgId);
+                        preview.src = base64; preview.style.display = 'inline-block';
+                        if (previewTextId) document.getElementById(previewTextId).style.display = 'none';
                     };
                     reader.readAsDataURL(file);
                 });
@@ -426,253 +405,117 @@
             setupImageUpload('prod-gallery-file-2', 'prod-gallery-data-2', 'gallery-preview-2');
             setupImageUpload('prod-gallery-file-3', 'prod-gallery-data-3', 'gallery-preview-3');
 
-            // 綁定表單送出事件
-            document.getElementById('product-form').addEventListener('submit', function (e) {
-                e.preventDefault();
-                saveProduct(); // 執行與伺服器溝通的儲存函數
-            });
+            fetchUsersFromServer();
+            fetchOrdersFromServer();
+            fetchProductsFromServer();
 
-            // ==========================================
-            // 🌟 UX 優化：記住戰情室最後停留的頁籤
-            // ==========================================
-            // 1. 監聽所有頁籤的切換事件，並把 ID 存起來
-            const adminTabs = document.querySelectorAll('#v-pills-tab button[data-bs-toggle="pill"]');
-            adminTabs.forEach(tab => {
-                tab.addEventListener('shown.bs.tab', function (event) {
-                    localStorage.setItem('lastActiveAdminTab', event.target.id);
-                });
-            });
+            document.getElementById('product-form').addEventListener('submit', (e) => { e.preventDefault(); saveProduct(); });
 
-            // 2. 網頁載入時，檢查是否有記憶的頁籤，有的話就自動切換過去
-            const savedTabId = localStorage.getItem('lastActiveAdminTab');
-            if (savedTabId) {
-                const targetTab = document.getElementById(savedTabId);
-                if (targetTab) {
-                    const bsTab = new bootstrap.Tab(targetTab);
-                    bsTab.show();
-                }
-            }
+            // 記憶頁籤
+            document.querySelectorAll('#v-pills-tab button').forEach(tab => {
+                tab.addEventListener('shown.bs.tab', (e) => { localStorage.setItem('lastActiveAdminTab', e.target.id); });
+            });
+            const savedTab = localStorage.getItem('lastActiveAdminTab');
+            if (savedTab) { const t = document.getElementById(savedTab); if (t) new bootstrap.Tab(t).show(); }
         });
 
-        // ==========================================
-        // 🚀 API 核心功能區
-        // ==========================================
-
-        // 讀取伺服器資料 (GET)
+        // 🔥 商品 CRUD 功能
         async function fetchProductsFromServer() {
             try {
                 const response = await fetch(API_BASE_URL);
-                if (!response.ok) throw new Error('伺服器回應錯誤');
                 const result = await response.json();
-
                 if (result.status === 'success') {
                     adminProductsDB = result.data;
                     renderProductsTable();
-
-                    // 更新伺服器狀態燈號
-                    const statServer = document.getElementById('stat-server');
-                    if (statServer) {
-                        statServer.innerText = '✅ 連線正常';
-                        statServer.style.color = '#22c55e';
-                    }
+                    const s = document.getElementById('stat-server');
+                    s.innerText = '✅ 連線正常'; s.style.color = '#22c55e';
                 }
-            } catch (error) {
-                console.error("Fetch Error:", error);
-                const statServer = document.getElementById('stat-server');
-                if (statServer) {
-                    statServer.innerText = '❌ 連線失敗';
-                    statServer.style.color = '#ef4444';
-                }
-                alert("⚠️ 無法連線至後端伺服器！請確認 Python API 正在運行中。");
+            } catch (e) {
+                const s = document.getElementById('stat-server');
+                s.innerText = '❌ 連線失敗'; s.style.color = '#ef4444';
             }
         }
 
-        // 渲染商品表格 (維持你的排版格式)
         function renderProductsTable() {
-            const productsListHTML = document.getElementById('admin-products-list');
-            let lowStockCount = 0;
-            productsListHTML.innerHTML = '';
-
-            const categoryMap = {
-                'figure': '景品模型', 'card': '稀有卡片', 'apparel': '潮流服飾', 'music': '音樂周邊', 'other': '其他配件'
-            };
-
-            adminProductsDB.forEach(product => {
-                if (product.stock <= 5) lowStockCount++;
-
-                let stockColor = product.stock <= 5 ? '#ef4444' : 'var(--accent)';
-                let catName = categoryMap[product.category] || product.category;
-
-                let galleryBadge = product.gallery && product.gallery.length > 0
-                    ? `<span class="badge bg-info text-dark" style="font-size: 0.7rem; margin-left: 5px;">+${product.gallery.length}圖</span>`
-                    : '';
-
-                productsListHTML.innerHTML += `
-                    <tr>
-                        <td style="color: #94a3b8;">#${product.id.toString().padStart(3, '0')}</td>
-                        <td class="text-white">
-                            <div class="d-flex align-items-center gap-3">
-                                <img src="${product.image}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1);" onerror="this.src='../assets/images/logo.png'">
-                                <div>
-                                    ${product.name}
-                                    <div class="mt-1">${galleryBadge}</div>
-                                </div>
-                            </div>
-                        </td>
-                        <td class="text-white"><small class="badge bg-secondary">${catName}</small></td>
-                        <td class="text-white">NT$${product.price}</td>
-                        <td style="font-weight: bold; font-family: var(--font-title); color: ${stockColor};">${product.stock}</td>
-                        <td>
-                            <button class="btn btn-outline-info btn-admin-action" onclick="openProductModal(${product.id})">✏️ 編輯</button>
-                            <button class="btn btn-outline-danger btn-admin-action" onclick="deleteProduct(${product.id})">🗑️ 刪除</button>
-                        </td>
-                    </tr>
-                `;
+            const list = document.getElementById('admin-products-list');
+            let low = 0; list.innerHTML = '';
+            const catMap = { 'figure': '景品模型', 'card': '稀有卡片', 'clothes': '潮流服飾', 'music': '音樂周邊', 'other': '其他配件' };
+            adminProductsDB.forEach(p => {
+                if (p.stock <= 5) low++;
+                let sCol = p.stock <= 5 ? '#ef4444' : 'var(--accent)';
+                let gal = p.gallery && p.gallery.length > 0 ? `<span class="badge bg-info text-dark" style="font-size: 0.7rem; margin-left: 5px;">+${p.gallery.length}圖</span>` : '';
+                list.innerHTML += `<tr><td style="color: #94a3b8;">#${p.id.toString().padStart(3, '0')}</td><td class="text-white"><div class="d-flex align-items-center gap-3"><img src="${p.image}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1);" onerror="this.src='../assets/images/logo.png'"><div>${p.name}${gal}</div></div></td><td class="text-white"><small class="badge bg-secondary">${catMap[p.category] || p.category}</small></td><td class="text-white">NT$${p.price}</td><td style="font-weight: bold; font-family: var(--font-title); color: ${sCol};">${p.stock}</td><td><button class="btn btn-outline-info btn-admin-action" onclick="openProductModal(${p.id})">✏️ 編輯</button><button class="btn btn-outline-danger btn-admin-action" onclick="deleteProduct(${p.id})">🗑️ 刪除</button></td></tr>`;
             });
-
-            document.getElementById('stat-low-stock').innerText = lowStockCount;
+            document.getElementById('stat-low-stock').innerText = low;
         }
 
-        // 輔助函數：用來重置預覽區塊
         function resetImagePreview(dataId, previewId, fileId, textId = null, imgUrl = '') {
             document.getElementById(dataId).value = imgUrl;
             document.getElementById(fileId).value = '';
-            const previewImg = document.getElementById(previewId);
-
-            if (imgUrl) {
-                previewImg.src = imgUrl;
-                previewImg.style.display = 'inline-block';
-                if (textId) document.getElementById(textId).style.display = 'none';
-            } else {
-                previewImg.src = '';
-                previewImg.style.display = 'none';
-                if (textId) document.getElementById(textId).style.display = 'block';
-            }
+            const p = document.getElementById(previewId);
+            if (imgUrl) { p.src = imgUrl; p.style.display = 'inline-block'; if (textId) document.getElementById(textId).style.display = 'none'; }
+            else { p.src = ''; p.style.display = 'none'; if (textId) document.getElementById(textId).style.display = 'block'; }
         }
 
-        // 開啟 Modal (維持你的欄位讀取邏輯)
         function openProductModal(id = null) {
-            const modalTitle = document.getElementById('productModalLabel');
             const form = document.getElementById('product-form');
             form.reset();
-
             if (id !== null) {
-                modalTitle.innerText = "⚙️ 編輯商品 (EDIT CONFIG)";
-                const product = adminProductsDB.find(p => p.id === id);
-                if (product) {
-                    document.getElementById('prod-id').value = product.id;
-                    document.getElementById('prod-name').value = product.name;
-                    document.getElementById('prod-price').value = product.price;
-                    document.getElementById('prod-stock').value = product.stock;
-                    document.getElementById('prod-category').value = product.category;
-
-                    resetImagePreview('prod-image-data', 'image-preview', 'prod-image-file', 'image-preview-text', product.image);
-
-                    let g1 = product.gallery && product.gallery[0] ? product.gallery[0] : '';
-                    let g2 = product.gallery && product.gallery[1] ? product.gallery[1] : '';
-                    let g3 = product.gallery && product.gallery[2] ? product.gallery[2] : '';
-
-                    resetImagePreview('prod-gallery-data-1', 'gallery-preview-1', 'prod-gallery-file-1', null, g1);
-                    resetImagePreview('prod-gallery-data-2', 'gallery-preview-2', 'prod-gallery-file-2', null, g2);
-                    resetImagePreview('prod-gallery-data-3', 'gallery-preview-3', 'prod-gallery-file-3', null, g3);
+                const p = adminProductsDB.find(x => x.id === id);
+                if (p) {
+                    document.getElementById('productModalLabel').innerText = "⚙️ 編輯商品 (EDIT CONFIG)";
+                    document.getElementById('prod-id').value = p.id;
+                    document.getElementById('prod-name').value = p.name;
+                    document.getElementById('prod-price').value = p.price;
+                    document.getElementById('prod-stock').value = p.stock;
+                    document.getElementById('prod-category').value = p.category;
+                    resetImagePreview('prod-image-data', 'image-preview', 'prod-image-file', 'image-preview-text', p.image);
+                    resetImagePreview('prod-gallery-data-1', 'gallery-preview-1', 'prod-gallery-file-1', null, p.gallery?.[0] || '');
+                    resetImagePreview('prod-gallery-data-2', 'gallery-preview-2', 'prod-gallery-file-2', null, p.gallery?.[1] || '');
+                    resetImagePreview('prod-gallery-data-3', 'gallery-preview-3', 'prod-gallery-file-3', null, p.gallery?.[2] || '');
                 }
             } else {
-                modalTitle.innerText = "➕ 新增商品 (NEW PRODUCT)";
+                document.getElementById('productModalLabel').innerText = "➕ 新增商品 (NEW PRODUCT)";
                 document.getElementById('prod-id').value = '';
-
                 resetImagePreview('prod-image-data', 'image-preview', 'prod-image-file', 'image-preview-text', '');
                 resetImagePreview('prod-gallery-data-1', 'gallery-preview-1', 'prod-gallery-file-1', null, '');
                 resetImagePreview('prod-gallery-data-2', 'gallery-preview-2', 'prod-gallery-file-2', null, '');
                 resetImagePreview('prod-gallery-data-3', 'gallery-preview-3', 'prod-gallery-file-3', null, '');
             }
-
-            const modal = new bootstrap.Modal(document.getElementById('productModal'));
-            modal.show();
+            new bootstrap.Modal(document.getElementById('productModal')).show();
         }
 
-        // 🔥 寫入伺服器資料庫 (POST / PUT)
         async function saveProduct() {
-            const idVal = document.getElementById('prod-id').value;
-            const mainImgData = document.getElementById('prod-image-data').value;
-
-            if (!mainImgData) {
-                alert("⚠️ 請務必上傳一張主圖片！");
-                return;
-            }
-
-            let newGallery = [
-                document.getElementById('prod-gallery-data-1').value,
-                document.getElementById('prod-gallery-data-2').value,
-                document.getElementById('prod-gallery-data-3').value
-            ].filter(img => img !== "");
-
-            // 打包成 JSON 格式
-            const productData = {
+            const id = document.getElementById('prod-id').value;
+            const img = document.getElementById('prod-image-data').value;
+            if (!img) { alert("⚠️ 請務必上傳主圖片！"); return; }
+            const data = {
                 name: document.getElementById('prod-name').value.trim(),
                 price: parseInt(document.getElementById('prod-price').value),
                 stock: parseInt(document.getElementById('prod-stock').value),
                 category: document.getElementById('prod-category').value,
-                image: mainImgData,
-                gallery: newGallery
+                image: img,
+                gallery: [document.getElementById('prod-gallery-data-1').value, document.getElementById('prod-gallery-data-2').value, document.getElementById('prod-gallery-data-3').value].filter(i => i !== "")
             };
-
-            // 按鈕防連點保護
             const btn = document.querySelector('#product-form button[type="submit"]');
-            const originalText = btn.innerText;
-            btn.disabled = true;
-            btn.innerText = "⏳ 伺服器傳輸中...";
-
+            const orig = btn.innerText; btn.disabled = true; btn.innerText = "⏳ 傳輸中...";
             try {
-                // 如果有 ID 就是修改(PUT)，沒有 ID 就是新增(POST)
-                const method = idVal ? 'PUT' : 'POST';
-                const url = idVal ? `${API_BASE_URL}/${idVal}` : API_BASE_URL;
-
-                const response = await fetch(url, {
-                    method: method,
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(productData)
-                });
-
-                if (!response.ok) throw new Error('API 請求失敗');
-                const result = await response.json();
-
-                if (result.status === 'success') {
-                    alert(idVal ? "✅ 商品資料修改成功！" : "✅ 新增商品已寫入資料庫！");
-                    const modal = bootstrap.Modal.getInstance(document.getElementById('productModal'));
-                    if (modal) modal.hide();
-
-                    // 成功後，要求伺服器重新發送最新的完整清單來更新畫面！
+                const res = await fetch(id ? `${API_BASE_URL}/${id}` : API_BASE_URL, { method: id ? 'PUT' : 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+                if ((await res.json()).status === 'success') {
+                    alert("✅ 儲存成功！");
+                    bootstrap.Modal.getInstance(document.getElementById('productModal')).hide();
                     await fetchProductsFromServer();
                 }
-            } catch (error) {
-                console.error("Save Error:", error);
-                alert("⛔ 儲存失敗！請檢查後端伺服器是否正常運作。");
-            } finally {
-                // 恢復按鈕狀態
-                btn.disabled = false;
-                btn.innerText = originalText;
-            }
+            } catch (e) { alert("⛔ 失敗！請檢查後端。"); }
+            finally { btn.disabled = false; btn.innerText = orig; }
         }
 
-        // 🔥 刪除伺服器商品 (DELETE)
         async function deleteProduct(id) {
-            if (confirm("⚠️ 嚴重警告：確定要將此商品從「真實資料庫」中永久刪除嗎？此操作無法復原！")) {
+            if (confirm("⚠️ 確定要永久刪除此商品嗎？")) {
                 try {
-                    const response = await fetch(`${API_BASE_URL}/${id}`, {
-                        method: 'DELETE'
-                    });
-
-                    if (!response.ok) throw new Error('API 請求失敗');
-                    const result = await response.json();
-
-                    if (result.status === 'success') {
-                        // 刪除成功後，重新整理畫面清單
-                        await fetchProductsFromServer();
-                    }
-                } catch (error) {
-                    console.error("Delete Error:", error);
-                    alert("⛔ 刪除失敗！請檢查後端伺服器是否正常運作。");
-                }
+                    const res = await fetch(`${API_BASE_URL}/${id}`, { method: 'DELETE' });
+                    if ((await res.json()).status === 'success') await fetchProductsFromServer();
+                } catch (e) { alert("⛔ 刪除失敗！"); }
             }
         }
     </script>

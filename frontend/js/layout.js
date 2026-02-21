@@ -92,7 +92,7 @@ function loadHeader() {
                             <div class="mb-3 input-group-tech">
                                 <label>修改密碼 (Password)</label>
                                 <div class="input-group">
-                                    <input type="password" class="form-control" id="edit-password" placeholder="請輸入新密碼" required minlength="6">
+                                    <input type="password" class="form-control" id="edit-password" placeholder="若不修改密碼請留白" minlength="6">
                                     <button class="btn" type="button" id="toggleEditPassword">👁️</button>
                                 </div>
                             </div>
@@ -100,7 +100,7 @@ function loadHeader() {
                             <div class="mb-3 input-group-tech">
                                 <label>確認新密碼 (Confirm Password)</label>
                                 <div class="input-group">
-                                    <input type="password" class="form-control" id="edit-password-confirm" placeholder="請再次輸入新密碼" required minlength="6">
+                                    <input type="password" class="form-control" id="edit-password-confirm" placeholder="再次輸入新密碼" minlength="6">
                                     <button class="btn" type="button" id="toggleEditPasswordConfirm">👁️</button>
                                 </div>
                             </div>
@@ -146,76 +146,107 @@ function loadHeader() {
             });
         }
 
-        // 綁定打開 Profile 視窗的事件
+        // 🌟 修正1：綁定打開 Profile 視窗的事件，直接讀取 LocalStorage 獨立變數
         const profileBtn = document.getElementById('profile-btn');
         if (profileBtn) {
             profileBtn.addEventListener('click', function(e) {
                 e.preventDefault();
                 const currentUsername = localStorage.getItem('username');
                 
-                // 防呆：如果是 admin 測試帳號，不允許修改
                 if (currentUsername === 'admin') {
                     alert("⚠️ 系統提示：最高管理員 (ADMIN) 帳號的檔案已鎖定，無法在此修改！");
                     return;
                 }
 
-                // 從資料庫抓取目前登入者的資料
-                let usersDB = JSON.parse(localStorage.getItem('usersDatabase')) || [];
-                const currentUser = usersDB.find(user => user.username === currentUsername);
-
-                if (currentUser) {
-                    // 把現有資料自動填入輸入框，確認密碼也先填入舊密碼
-                    document.getElementById('edit-name').value = currentUser.name || '';
-                    document.getElementById('edit-phone').value = currentUser.phone || '';
-                    document.getElementById('edit-password').value = currentUser.password || '';
-                    document.getElementById('edit-password-confirm').value = currentUser.password || '';
-                    document.getElementById('edit-store').value = currentUser.store_711 || '';
-                    
-                    // 呼叫 Bootstrap 打開視窗
-                    const profileModal = new bootstrap.Modal(document.getElementById('profileModal'));
-                    profileModal.show();
+                // 直接把目前存在瀏覽器裡的資料填入輸入框
+                document.getElementById('edit-name').value = localStorage.getItem('name') || '';
+                document.getElementById('edit-phone').value = localStorage.getItem('userPhone') || '';
+                document.getElementById('edit-password').value = ''; // 基於安全，不自動填入密碼
+                document.getElementById('edit-password-confirm').value = '';
+                
+                // 檢查門市是否有在選單內，沒有的話預設選第一個
+                const savedStore = localStorage.getItem('userStore');
+                const storeSelect = document.getElementById('edit-store');
+                let storeExists = false;
+                for (let i = 0; i < storeSelect.options.length; i++) {
+                    if (storeSelect.options[i].value === savedStore) {
+                        storeExists = true;
+                        break;
+                    }
                 }
+                storeSelect.value = storeExists ? savedStore : storeSelect.options[0].value;
+                
+                const profileModal = new bootstrap.Modal(document.getElementById('profileModal'));
+                profileModal.show();
             });
         }
 
-        // 綁定儲存修改資料的事件
+        // 🌟 修正2：綁定儲存修改資料的事件 (API 真實連線版)
         const profileForm = document.getElementById('profile-update-form');
         if (profileForm) {
-            profileForm.addEventListener('submit', function(e) {
+            // 注意這裡加上了 async
+            profileForm.addEventListener('submit', async function(e) {
                 e.preventDefault();
                 
                 const newName = document.getElementById('edit-name').value.trim();
                 const newPhone = document.getElementById('edit-phone').value.trim();
                 const newPassword = document.getElementById('edit-password').value;
-                const confirmPassword = document.getElementById('edit-password-confirm').value; // 抓取確認密碼
+                const confirmPassword = document.getElementById('edit-password-confirm').value; 
                 const newStore = document.getElementById('edit-store').value;
                 
-                // 🔥 新增：防呆檢查兩次密碼是否一致
-                if (newPassword !== confirmPassword) {
-                    alert("⚠️ 系統提示：兩次輸入的密碼不一致，請重新確認！");
-                    document.getElementById('edit-password-confirm').focus(); // 跳回確認密碼框
-                    return; // 中斷儲存動作
+                // 防呆檢查兩次密碼是否一致
+                if (newPassword || confirmPassword) {
+                    if (newPassword !== confirmPassword) {
+                        alert("⚠️ 系統提示：兩次輸入的新密碼不一致，請重新確認！");
+                        document.getElementById('edit-password-confirm').focus(); 
+                        return; 
+                    }
                 }
 
                 const currentUsername = localStorage.getItem('username');
-                let usersDB = JSON.parse(localStorage.getItem('usersDatabase')) || [];
-                const userIndex = usersDB.findIndex(user => user.username === currentUsername);
                 
-                if (userIndex > -1) {
-                    // 更新資料庫裡的該筆資料
-                    usersDB[userIndex].name = newName;
-                    usersDB[userIndex].phone = newPhone;
-                    usersDB[userIndex].password = newPassword;
-                    usersDB[userIndex].store_711 = newStore;
-                    
-                    localStorage.setItem('usersDatabase', JSON.stringify(usersDB));
-                    
-                    // 同步更新當前登入的快取
-                    localStorage.setItem('name', newName);
-                    localStorage.setItem('userStore', newStore);
-                    
-                    alert("✅ 個人資料更新成功！");
-                    window.location.reload(); // 重新整理網頁讓右上角的名稱立刻更新
+                // 1. 打包要送給 Python 伺服器的資料
+                const updateData = {
+                    name: newName,
+                    phone: newPhone,
+                    password: newPassword, // 如果沒填就是空字串，後端會自動忽略
+                    store_711: newStore
+                };
+
+                // 讓按鈕變成讀取中，防止連點
+                const submitBtn = document.querySelector('#profile-update-form button[type="submit"]');
+                const originalText = submitBtn.innerText;
+                submitBtn.disabled = true;
+                submitBtn.innerText = "⏳ 寫入資料庫中...";
+
+                try {
+                    // 2. 呼叫後端 PUT API 修改資料
+                    const response = await fetch(`http://localhost:8000/api/users/${currentUsername}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(updateData)
+                    });
+
+                    const result = await response.json();
+
+                    if (response.ok && result.status === 'success') {
+                        // 3. 伺服器修改成功後，同步更新前端的 LocalStorage 快取
+                        localStorage.setItem('name', result.data.name);
+                        localStorage.setItem('userPhone', result.data.phone);
+                        localStorage.setItem('userStore', result.data.store_711);
+                        
+                        alert("✅ 個人資料已成功永久寫入真實資料庫！");
+                        window.location.reload(); // 重新整理網頁讓右上角的名稱立刻更新
+                    } else {
+                        alert("⛔ 更新失敗：" + (result.detail || "伺服器發生錯誤"));
+                    }
+                } catch (error) {
+                    console.error("API 錯誤:", error);
+                    alert("⚠️ 無法連線至伺服器，請確認您的 Python 伺服器正在運行中。");
+                } finally {
+                    // 恢復按鈕狀態
+                    submitBtn.disabled = false;
+                    submitBtn.innerText = originalText;
                 }
             });
         }
@@ -231,19 +262,29 @@ function loadHeader() {
         });
     }
 
-    // 7. 綁定「登出」按鈕的功能
+    // 7. 綁定「登出」按鈕的功能 (物理全清除版)
     const logoutBtn = document.getElementById('logout-btn');
     if (logoutBtn) {
         logoutBtn.addEventListener('click', function(e) {
             e.preventDefault(); 
             const confirmLogout = confirm("⚠️ 系統提示：確定要登出系統並清空目前的購物車嗎？");
             if (confirmLogout) {
-                localStorage.removeItem('isLoggedIn');
-                localStorage.removeItem('username');
-                localStorage.removeItem('name'); 
-                localStorage.removeItem('userStore'); 
-                localStorage.removeItem('techCart');
-                alert("🚪 系統登出完畢，購物車已淨空，期待您再次回來！");
+                // 列出所有你在截圖中看到的 Key，通通刪掉
+                const keysToRemove = [
+                    'isLoggedIn', 
+                    'username', 
+                    'name', 
+                    'userStore', 
+                    'userPhone', 
+                    'userEmail', 
+                    'userRealName', 
+                    'techCart',
+                    'lastActiveAdminTab' // 如果連分頁紀錄都不想要留也可以刪掉
+                ];
+                
+                keysToRemove.forEach(key => localStorage.removeItem(key));
+                
+                alert("🚪 系統已安全登出，資料已從瀏覽器清除。");
                 window.location.href = isInnerPage ? '../index.html' : 'index.html';
             }
         });

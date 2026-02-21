@@ -1,4 +1,4 @@
-// js/main.js
+// frontend/js/main.js
 
 document.addEventListener("DOMContentLoaded", async () => {
 
@@ -8,18 +8,16 @@ document.addEventListener("DOMContentLoaded", async () => {
     let appProducts = [];
     
     try {
-        // 📞 打電話給 Python 餐廳 (API) 點餐
         console.log("連線至 Python 伺服器中...");
         const response = await fetch('http://localhost:8000/api/products');
         const data = await response.json();
         
         if (data.status === "success") {
-            appProducts = data.data; // 把後端傳來的商品存起來！
+            appProducts = data.data; 
             console.log("✅ 成功從 Python 後端取得商品資料！", appProducts);
         }
     } catch (error) {
         console.error("⚠️ 無法連線至後端伺服器，切換為本地備用資料庫...", error);
-        // 備用方案：如果後端沒開，退回使用 LocalStorage 或 data.js
         if (localStorage.getItem('adminProducts')) {
             appProducts = JSON.parse(localStorage.getItem('adminProducts'));
         } else if (typeof productsData !== 'undefined') {
@@ -28,38 +26,31 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     // ==========================================
-    // 1. 輪播圖功能 (只在有輪播圖的頁面執行)
+    // 1. 輪播圖功能 
     // ==========================================
     var myCarousel = document.querySelector('#carouselExampleIndicators');
     if (myCarousel) {
-        new bootstrap.Carousel(myCarousel, {
-            interval: 3000,
-            ride: 'carousel'
-        });
+        new bootstrap.Carousel(myCarousel, { interval: 3000, ride: 'carousel' });
     }
 
     // ==========================================
-    // 2. 商品列表渲染功能 (改讀取 appProducts)
+    // 2. 商品列表渲染功能 
     // ==========================================
     const productsContainer = document.getElementById("products-container");
     
     if (productsContainer) {
-        
         if (appProducts.length === 0) {
             productsContainer.innerHTML = '<p class="text-white text-center">Data Error: 無商品資料</p>';
             return;
         }
 
-        // --- 1. 取得網址上的參數 (加入搜尋參數) ---
         const urlParams = new URLSearchParams(window.location.search);
         const currentCategory = urlParams.get('category'); 
         const searchQuery = urlParams.get('search');       
 
-        // --- 2. 篩選資料 ---
         let filteredProducts = appProducts;
         let categoryTitle = "全部商品 ALL PRODUCTS";
 
-        // 定義分類名稱對照表 (用來顯示標題)
         const categoryMap = {
             'figure': '景品模型 FIGURE',
             'card': '稀有卡片 CARD',
@@ -68,7 +59,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             'other': '其他配件 OTHERS'
         };
 
-        // 🔥 邏輯判斷：搜尋的優先權高於分類
         if (searchQuery) {
             const lowerKeyword = searchQuery.toLowerCase();
             filteredProducts = appProducts.filter(p => p.name.toLowerCase().includes(lowerKeyword));
@@ -76,12 +66,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         } 
         else if (currentCategory && currentCategory !== 'all') {
             filteredProducts = appProducts.filter(p => p.category === currentCategory);
-            if (categoryMap[currentCategory]) {
-                categoryTitle = categoryMap[currentCategory];
-            }
+            if (categoryMap[currentCategory]) categoryTitle = categoryMap[currentCategory];
         }
 
-        // --- 3. 更新頁面標題 (UX 優化) ---
         const pageTitleElement = document.querySelector('.section-title');
         if (pageTitleElement) {
             if (searchQuery) {
@@ -96,20 +83,17 @@ document.addEventListener("DOMContentLoaded", async () => {
             }
         }
 
-        // --- 4. 渲染邏輯 ---
         const itemsPerPage = 8;
         let currentPage = 1;
 
         function renderProducts(page) {
             productsContainer.innerHTML = "";
-            
             const startIndex = (page - 1) * itemsPerPage;
             const endIndex = startIndex + itemsPerPage;
             const currentItems = filteredProducts.slice(startIndex, endIndex);
 
             if(currentItems.length === 0) {
                 const emptyMessage = searchQuery ? `找不到包含「${searchQuery}」的商品` : '此分類目前沒有庫存';
-                
                 productsContainer.innerHTML = `
                     <div class="col-12 text-center" style="padding: 50px;">
                         <h3 class="text-muted" style="letter-spacing: 2px;">NO DATA FOUND</h3>
@@ -165,7 +149,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                 `;
                 productsContainer.insertAdjacentHTML('beforeend', productHTML);
             });
-
             updatePaginationButtons();
         }
 
@@ -201,7 +184,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     // ==========================================
-    // 3. 購物車互動功能 (Tech Modal & Toast)
+    // 3. 購物車互動功能
     // ==========================================
     const cartModalEl = document.getElementById('cartModal');
     if (cartModalEl) {
@@ -210,7 +193,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         document.addEventListener('click', function(e) {
             if (e.target && e.target.classList.contains('add-to-cart')) {
-                
                 const isUserLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
                 if (!isUserLoggedIn) {
                     const confirmLogin = confirm("⚠️ 存取被拒：請先登入系統才能加入購物車。\n\n是否立即前往登入頁面？");
@@ -274,7 +256,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (confirmBtn) {
             confirmBtn.onclick = () => {
                 const quantity = parseInt(document.getElementById('modal-quantity').value);
-                
                 let cart = JSON.parse(localStorage.getItem('techCart')) || [];
                 const existingItemIndex = cart.findIndex(item => item.id === currentProduct.id);
                 
@@ -286,22 +267,13 @@ document.addEventListener("DOMContentLoaded", async () => {
                     }
                     cart[existingItemIndex].quantity = newQty;
                 } else {
-                    cart.push({
-                        id: currentProduct.id,
-                        name: currentProduct.name,
-                        price: currentProduct.price,
-                        image: currentProduct.image,
-                        quantity: quantity,
-                        stock: currentProduct.stock 
-                    });
+                    cart.push({ ...currentProduct, quantity: quantity });
                 }
                 
                 localStorage.setItem('techCart', JSON.stringify(cart));
                 cartModal.hide();
 
-                setTimeout(() => {
-                    showToast(currentProduct.name, quantity);
-                }, 300);
+                setTimeout(() => showToast(currentProduct.name, quantity), 300);
             };
         }
     }
@@ -309,24 +281,20 @@ document.addEventListener("DOMContentLoaded", async () => {
     function showToast(productName, quantity) {
         const toast = document.getElementById('cart-toast');
         const msg = document.getElementById('toast-message');
-        
         if (toast && msg) {
             msg.textContent = `已將 ${quantity} 個「${productName}」加入購物車`;
             toast.classList.add('show');
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 3000);
+            setTimeout(() => toast.classList.remove('show'), 3000);
         }
     }
 
     // ==========================================
-    // 9. 購物車頁面渲染邏輯 (Cart Rendering)
+    // 9. 購物車頁面渲染邏輯 
     // ==========================================
     const cartItemsContainer = document.getElementById('cart_items');
     const totalPriceElement = document.getElementById('total_price');
 
     if (cartItemsContainer && totalPriceElement) {
-        
         function renderCart() {
             let cart = JSON.parse(localStorage.getItem('techCart')) || [];
             cartItemsContainer.innerHTML = ''; 
@@ -380,32 +348,26 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             document.querySelectorAll('.plus-item-btn').forEach(btn => {
                 btn.addEventListener('click', function() {
-                    const itemIndex = this.getAttribute('data-index');
-                    updateCartQuantity(itemIndex, 1);
+                    updateCartQuantity(this.getAttribute('data-index'), 1);
                 });
             });
 
             document.querySelectorAll('.minus-item-btn').forEach(btn => {
                 btn.addEventListener('click', function() {
-                    const itemIndex = this.getAttribute('data-index');
-                    updateCartQuantity(itemIndex, -1);
+                    updateCartQuantity(this.getAttribute('data-index'), -1);
                 });
             });
         }
 
         function updateCartQuantity(index, change) {
             let cart = JSON.parse(localStorage.getItem('techCart')) || [];
-            
             if (cart[index]) {
                 let newQty = cart[index].quantity + change;
-
                 if (change > 0 && newQty > cart[index].stock) {
                     alert(`⚠️ 資源不足：此商品的庫存上限為 ${cart[index].stock} 個！`);
                     return; 
                 }
-
                 cart[index].quantity = newQty;
-
                 if (cart[index].quantity <= 0) {
                     if(confirm("⚠ 數量已為 0，是否將此商品從購物車移除？")) {
                         cart.splice(index, 1); 
@@ -413,23 +375,19 @@ document.addEventListener("DOMContentLoaded", async () => {
                         cart[index].quantity = 1; 
                     }
                 }
-                
                 localStorage.setItem('techCart', JSON.stringify(cart));
                 renderCart(); 
             }
         }
-
         renderCart();
     } 
 
     // ==========================================
-    // 🔥 10. 查看商品詳情 (Gallery Modal) - 讀取 appProducts
+    // 10. 查看商品詳情 (Gallery Modal) 
     // ==========================================
     document.addEventListener('click', function(e) {
         if (e.target && e.target.classList.contains('view-details-btn')) {
             const productId = e.target.getAttribute('data-id');
-            
-            // 使用字串比對，相容 Date.now() 產生的 ID
             const product = appProducts.find(p => p.id.toString() === productId);
 
             if (product) {
@@ -466,7 +424,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                 }
 
                 const detailAddCartBtn = document.getElementById('detail-modal-add-cart');
-                
                 detailAddCartBtn.className = `btn ${product.stock === 0 ? 'btn-secondary' : 'btn-primary'} px-4 add-to-cart`;
                 detailAddCartBtn.disabled = product.stock === 0;
                 detailAddCartBtn.textContent = product.stock === 0 ? '補貨中...' : '加入購物車';
@@ -489,19 +446,17 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
 
     // ==========================================
-    // 11. 首頁動態儀表板 - 讀取 appProducts 並處理 Base64
+    // 11. 首頁動態儀表板 
     // ==========================================
     const newArrivalsList = document.getElementById('new-arrivals-list');
     const highStockList = document.getElementById('high-stock-list');
     const rareItemsList = document.getElementById('rare-items-list');
 
     if (newArrivalsList && highStockList && rareItemsList && appProducts.length > 0) {
-        
         const isInnerPage = window.location.pathname.includes('/pages/');
         const linkPrefix = isInnerPage ? 'products.html' : 'pages/products.html';
 
         function createMiniCard(product, extraInfo, isAlert = false) {
-            // 自動判斷是否為 Base64 (data:image)，如果是就不改變路徑
             const isBase64 = product.image.startsWith('data:image');
             let safeImgSrc = product.image;
             if(!isBase64) {
@@ -539,385 +494,167 @@ document.addEventListener("DOMContentLoaded", async () => {
         const highStockProducts = [...appProducts].sort((a, b) => b.stock - a.stock).slice(0, 3);
         highStockList.innerHTML = highStockProducts.map(p => createMiniCard(p, `補給充足: ${p.stock} 件`)).join('');
 
-        const rareProducts = [...appProducts].filter(p => p.stock > 0).sort((a, b) => a.stock - b.stock).slice(0, 3);
-        rareItemsList.innerHTML = rareProducts.map(p => createMiniCard(p, `⚠ 存量告急：僅剩 ${p.stock} 件！`, true)).join('');
+        // 🔥 修正：加入嚴格條件，庫存必須大於 0 且「小於等於 5」才算告急
+        const rareProducts = [...appProducts]
+            .filter(p => p.stock > 0 && p.stock <= 5) 
+            .sort((a, b) => a.stock - b.stock)
+            .slice(0, 3);
+
+        // 如果有低庫存商品才渲染，沒有的話就顯示安全提示
+        if (rareProducts.length > 0) {
+            rareItemsList.innerHTML = rareProducts.map(p => createMiniCard(p, `⚠ 存量告急：僅剩 ${p.stock} 件！`, true)).join('');
+        } else {
+            rareItemsList.innerHTML = `
+                <div class="text-center p-3 mt-2" style="background: rgba(255,255,255,0.03); border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
+                    <span style="color: #22c55e; font-size: 1.2rem;">✅</span><br>
+                    <span style="color: #94a3b8; font-size: 0.9rem;">目前全品項庫存充足</span>
+                </div>
+            `;
+        }
     }
 
-}); // 整個 DOMContentLoaded 結束
-
-
-// ==========================================
-// 12. 會員註冊系統 (Registration Logic)
-// ==========================================
-document.addEventListener('DOMContentLoaded', function() {
-    const registerForm = document.getElementById('register-form');
-    
-    if (registerForm) {
-        const toggleRegPasswordBtn = document.getElementById('toggleRegPassword');
-        const regPasswordInput = document.getElementById('reg-password');
-        if (toggleRegPasswordBtn && regPasswordInput) {
-            toggleRegPasswordBtn.addEventListener('click', function() {
-                const type = regPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-                regPasswordInput.setAttribute('type', type);
-                this.textContent = type === 'password' ? '👁️' : '🙈';
-            });
-        }
-
-        const toggleRegPasswordConfirmBtn = document.getElementById('toggleRegPasswordConfirm');
-        const regPasswordConfirmInput = document.getElementById('reg-password-confirm');
-        if (toggleRegPasswordConfirmBtn && regPasswordConfirmInput) {
-            toggleRegPasswordConfirmBtn.addEventListener('click', function() {
-                const type = regPasswordConfirmInput.getAttribute('type') === 'password' ? 'text' : 'password';
-                regPasswordConfirmInput.setAttribute('type', type);
-                this.textContent = type === 'password' ? '👁️' : '🙈';
-            });
-        }
-
-        registerForm.addEventListener('submit', function(e) {
-            e.preventDefault(); 
-
-            const name = document.getElementById('reg-name').value.trim(); 
-            const username = document.getElementById('reg-username').value.trim();
-            const password = document.getElementById('reg-password').value;
-            const confirmPassword = document.getElementById('reg-password-confirm').value; 
-            const phone = document.getElementById('reg-phone').value.trim();
-            const email = document.getElementById('reg-email').value.trim();
-            const store = document.getElementById('reg-store').value;
-
-            if (password !== confirmPassword) {
-                alert("⚠️ 權限申請失敗：兩次輸入的密碼不一致，請重新確認！");
-                document.getElementById('reg-password-confirm').focus(); 
-                return; 
-            }
-
-            let usersDB = JSON.parse(localStorage.getItem('usersDatabase')) || [];
-
-            const isUserExist = usersDB.some(user => user.username === username);
-            if (isUserExist) {
-                alert("⚠️ 權限申請失敗：此登入代號 (帳號) 已被其他人使用，請更換一個！");
-                document.getElementById('reg-username').focus();
-                return; 
-            }
-
-            const newUser = {
-                name: name,         
-                username: username,
-                password: password, 
-                phone: phone,
-                email: email,
-                store_711: store,
-                registerTime: new Date().toLocaleString()
-            };
-
-            usersDB.push(newUser);
-            localStorage.setItem('usersDatabase', JSON.stringify(usersDB));
-
-            alert(`✅ 存取權限建立成功！\n歡迎特務 [ ${name} ] 加入 KCG 君王卡牌研究室。\n\n系統將自動引導您前往登入...`);
-            window.location.href = 'login.html'; 
-        });
-    }
-});
-
-// ==========================================
-// 13. 會員登入系統 (Login Logic) 
-// ==========================================
-document.addEventListener('DOMContentLoaded', function() {
-    const loginForm = document.getElementById('login-form');
-    
-    if (loginForm) {
-        const captchaDisplay = document.getElementById('captcha-code');
-        const captchaInput = document.getElementById('captcha-input');
-        const refreshBtn = document.getElementById('refresh-captcha');
-
-        function generateCaptcha() {
-            if (!captchaDisplay) return;
-            const randomNum = Math.floor(Math.random() * 10000);
-            const code = randomNum.toString().padStart(4, '0');
-            captchaDisplay.innerText = code;
-            captchaDisplay.setAttribute('data-code', code);
-        }
-
-        generateCaptcha();
-
-        if (refreshBtn) {
-            refreshBtn.addEventListener('click', () => {
-                captchaDisplay.style.opacity = '0.5';
-                setTimeout(() => {
-                    generateCaptcha();
-                    captchaDisplay.style.opacity = '1';
-                    captchaInput.value = '';
-                    captchaInput.focus();
-                }, 200);
-            });
-        }
-
-        if (captchaInput) {
-            captchaInput.addEventListener('input', () => {
-                captchaInput.classList.remove('is-invalid');
-            });
-        }
-
-        const togglePasswordBtn = document.getElementById('togglePassword');
-        const passwordInput = document.getElementById('password');
-        if (togglePasswordBtn && passwordInput) {
-            togglePasswordBtn.addEventListener('click', function() {
-                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-                passwordInput.setAttribute('type', type);
-                this.textContent = type === 'password' ? '👁️' : '🙈';
-            });
-        }
-
-        loginForm.addEventListener('submit', function(e) {
-            e.preventDefault(); 
-
-            const usernameInput = document.getElementById('username');
-            
-            const userVal = usernameInput.value.trim();
-            const passVal = passwordInput.value;
-            const capVal = captchaInput.value.trim();
-            const currentCaptcha = captchaDisplay ? captchaDisplay.getAttribute('data-code') : '';
-
-            if (capVal !== currentCaptcha) {
-                alert("⛔ 安全驗證失敗：驗證碼錯誤！");
-                captchaInput.classList.add('is-invalid');
-                captchaInput.value = '';
-                captchaInput.focus();
-                generateCaptcha(); 
-                return; 
-            }
-
-            let usersDB = JSON.parse(localStorage.getItem('usersDatabase')) || [];
-            const foundUser = usersDB.find(user => user.username === userVal);
-            
-            const isAdmin = (userVal === 'admin' && passVal === '123456');
-
-            if (isAdmin) {
-                localStorage.setItem('isLoggedIn', 'true');
-                localStorage.setItem('username', 'admin');
-                localStorage.setItem('name', 'ADMIN');
-                alert("✅ 身份驗證通過！歡迎 [ ADMIN ] 進入系統...");
-                window.location.href = '../index.html';
-                return;
-            }
-
-            if (!foundUser) {
-                alert("⛔ 存取被拒：此登入代號 (帳號) 不存在！\n如果您還沒有權限，請點擊下方「註冊新身份」。");
-                usernameInput.focus(); 
-                passwordInput.value = ''; 
-                captchaInput.value = '';  
-                generateCaptcha();
-                return;
-            }
-
-            if (foundUser.password !== passVal) {
-                alert("⛔ 存取被拒：密碼輸入錯誤，請重新確認！");
-                passwordInput.value = ''; 
-                passwordInput.focus();
-                captchaInput.value = '';  
-                generateCaptcha();
-                return;
-            }
-
-            localStorage.setItem('isLoggedIn', 'true');
-            localStorage.setItem('username', foundUser.username);
-            localStorage.setItem('name', foundUser.name);      
-            localStorage.setItem('userStore', foundUser.store_711); 
-
-            alert(`✅ 身份驗證通過！歡迎特務 [ ${foundUser.name} ] 進入系統...`);
-            window.location.href = '../index.html';
-        });
-    }
-});
-
-// ==========================================
-// 14. 結帳頁面邏輯 (Checkout Logic)
-// ==========================================
-document.addEventListener('DOMContentLoaded', function() {
+    // ==========================================
+    // 14. 結帳頁面邏輯 (無縫跳轉終極版)
+    // ==========================================
     const checkoutForm = document.getElementById('checkout-form');
-
     if (checkoutForm) {
-        console.log("✅ 結帳系統已連線！");
-
         const isUserLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
         let cart = JSON.parse(localStorage.getItem('techCart')) || [];
 
+        // 如果沒登入，默默導回登入頁
         if (!isUserLoggedIn) {
-            alert("⚠️ 存取被拒：請先完成身份驗證才能進行結帳！");
-            window.location.href = 'login.html';
+            window.location.replace('login.html');
             return;
         }
 
+        // 🔥 修正：如果購物車是空的，默默導回商品頁就好，不要彈出 alert 干擾跳轉！
         if (cart.length === 0) {
-            alert("⚠️ 購物清單為空，無法發送訂單！請先挑選商品。");
-            window.location.href = 'products.html';
+            window.location.replace('products.html');
             return;
         }
 
         const currentUsername = localStorage.getItem('username');
-        let usersDB = JSON.parse(localStorage.getItem('usersDatabase')) || [];
-        const currentUser = usersDB.find(user => user.username === currentUsername);
-
-        if (currentUser) {
-            document.getElementById('checkout-name').value = currentUser.name || currentUsername;
-            document.getElementById('checkout-phone').value = currentUser.phone || '無資料';
-            document.getElementById('checkout-email').value = currentUser.email || '無資料';
-            document.getElementById('checkout-store').value = currentUser.store_711 || localStorage.getItem('userStore') || '未選擇門市';
-        } else if (currentUsername === 'admin') {
+        
+        // 🌟 自動帶入個人資料
+        if (currentUsername === 'admin') {
             document.getElementById('checkout-name').value = '最高管理員 ADMIN';
             document.getElementById('checkout-phone').value = '0900-000-000';
             document.getElementById('checkout-email').value = 'admin@kcg.com';
-            document.getElementById('checkout-store').value = 'KCG 總部直屬門市';
+            
+            const storeInput = document.getElementById('checkout-store');
+            if (storeInput) storeInput.value = 'KCG 總部直屬門市';
+        } else {
+            document.getElementById('checkout-name').value = localStorage.getItem('name') || currentUsername || '';
+            document.getElementById('checkout-phone').value = localStorage.getItem('userPhone') || '';
+            document.getElementById('checkout-email').value = localStorage.getItem('userEmail') || '';
+            
+            const savedStore = localStorage.getItem('userStore') || '';
+            const storeInput = document.getElementById('checkout-store');
+            
+            if (storeInput) {
+                if (storeInput.tagName === 'SELECT') {
+                    let storeExists = false;
+                    for (let i = 0; i < storeInput.options.length; i++) {
+                        if (storeInput.options[i].value === savedStore) {
+                            storeExists = true;
+                            break;
+                        }
+                    }
+                    if (storeExists) storeInput.value = savedStore;
+                } else {
+                    storeInput.value = savedStore;
+                }
+            }
         }
 
+        // --- 渲染購物車清單 ---
         const checkoutItemsContainer = document.getElementById('checkout-items');
         const checkoutTotalElement = document.getElementById('checkout-total');
         let total = 0;
 
-        checkoutItemsContainer.innerHTML = '';
-        cart.forEach(item => {
-            const subtotal = item.price * item.quantity;
-            total += subtotal;
-
-            checkoutItemsContainer.innerHTML += `
-                <div class="d-flex align-items-center mb-3 pb-3" style="border-bottom: 1px solid rgba(255,255,255,0.05);">
-                    <img src="${item.image}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px; border: 1px solid rgba(6, 182, 212, 0.3); margin-right: 15px;" onerror="this.src='../assets/images/logo.png'">
-                    <div class="flex-grow-1">
-                        <h6 style="color: #fff; margin: 0 0 5px 0; font-size: 0.95rem;">${item.name}</h6>
-                        <small style="color: #94a3b8; font-family: var(--font-title);">NT$${item.price} x ${item.quantity}</small>
+        if (checkoutItemsContainer) {
+            checkoutItemsContainer.innerHTML = '';
+            cart.forEach(item => {
+                const subtotal = item.price * item.quantity;
+                total += subtotal;
+                checkoutItemsContainer.innerHTML += `
+                    <div class="d-flex align-items-center mb-3 pb-3" style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                        <img src="${item.image}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px; border: 1px solid rgba(6, 182, 212, 0.3); margin-right: 15px;" onerror="this.src='../assets/images/logo.png'">
+                        <div class="flex-grow-1">
+                            <h6 style="color: #fff; margin: 0 0 5px 0; font-size: 0.95rem;">${item.name}</h6>
+                            <small style="color: #94a3b8; font-family: var(--font-title);">NT$${item.price} x ${item.quantity}</small>
+                        </div>
+                        <div style="color: var(--accent); font-weight: bold; font-family: var(--font-title);">NT$${subtotal}</div>
                     </div>
-                    <div style="color: var(--accent); font-weight: bold; font-family: var(--font-title);">
-                        NT$${subtotal}
-                    </div>
-                </div>
-            `;
-        });
+                `;
+            });
+        }
         
-        checkoutTotalElement.innerText = `NT$${total}`;
+        if (checkoutTotalElement) {
+            checkoutTotalElement.innerText = `NT$${total}`;
+        }
 
-        checkoutForm.addEventListener('submit', function(e) {
+        // --- 真實結帳 API 連線邏輯 ---
+        // 🔥 修正：使用 onsubmit 徹底覆蓋舊事件，並回傳 false 阻擋任何預設重整
+        checkoutForm.onsubmit = async function(e) {
             e.preventDefault();
-
-            const orderNumber = 'KCG' + Date.now().toString().slice(-6) + Math.floor(Math.random() * 1000);
-
-            alert(`🎉 訂單發送成功！\n\n📄 訂單編號：${orderNumber}\n💰 總金額：NT$${total}\n\n商品將盡速配送至您的取貨門市，請留意簡訊通知。`);
-
-            localStorage.removeItem('techCart');
-            window.location.href = '../index.html';
-        });
-    }
-});
-
-// ==========================================
-// 15. 忘記密碼系統 (Forgot Password Logic) - 防重疊版
-// ==========================================
-document.addEventListener('DOMContentLoaded', function() {
-    const forgotPwdForm = document.getElementById('forgot-password-form');
-    
-    if (forgotPwdForm) {
-        console.log("✅ 忘記密碼系統大腦已連線！(防重疊模式啟動)");
-
-        const sendCodeBtn = document.getElementById('send-code-btn');
-        const forgotUsername = document.getElementById('forgot-username');
-        const forgotEmail = document.getElementById('forgot-email');
-        const forgotCode = document.getElementById('forgot-code');
-        const newPwd = document.getElementById('forgot-new-password');
-        const confirmPwd = document.getElementById('forgot-confirm-password');
-        const submitBtn = document.getElementById('reset-password-submit');
-        
-        const toggleNewPwdBtn = document.getElementById('toggleForgotNewPwd');
-        const toggleConfirmPwdBtn = document.getElementById('toggleForgotConfirmPwd');
-
-        let generatedCode = ""; 
-        let timer = null;       
-
-        sendCodeBtn.onclick = function() {
-            const userVal = forgotUsername.value.trim();
-            const emailVal = forgotEmail.value.trim();
-
-            if (!userVal || !emailVal) {
-                alert("⚠️ 請先輸入帳號與註冊時的電子信箱！");
-                return;
-            }
-
-            let usersDB = JSON.parse(localStorage.getItem('usersDatabase')) || [];
-            const targetUser = usersDB.find(user => user.username === userVal && user.email === emailVal);
-
-            if (!targetUser) {
-                alert("⛔ 查無此人：帳號或電子信箱不正確，請重新確認！");
-                return;
-            }
-
-            generatedCode = Math.floor(100000 + Math.random() * 900000).toString();
+            e.stopPropagation();
             
-            alert(`📧 【系統模擬發信】\n\n已發送驗證碼至：${emailVal}\n\n您的驗證碼為：${generatedCode}\n(請將此代碼填入下方驗證碼欄位)`);
+            const confirmOrder = confirm(`🛒 最終確認\n\n您即將送出這筆訂單，總金額為：NT$${total}\n確定要結帳嗎？`);
+            if (!confirmOrder) return false;
 
-            forgotCode.disabled = false;
-            newPwd.disabled = false;
-            confirmPwd.disabled = false;
-            submitBtn.disabled = false;
-            toggleNewPwdBtn.disabled = false;
-            toggleConfirmPwdBtn.disabled = false;
-            
-            sendCodeBtn.disabled = true; 
-            let countdown = 60;
-            sendCodeBtn.textContent = `已發送 (${countdown}s)`;
+            const orderItems = cart.map(item => ({
+                id: parseInt(item.id),
+                name: item.name,
+                price: parseInt(item.price),
+                quantity: parseInt(item.quantity)
+            }));
 
-            if(timer) clearInterval(timer);
+            const orderData = {
+                username: currentUsername,
+                shipping_name: document.getElementById('checkout-name').value.trim(),
+                shipping_phone: document.getElementById('checkout-phone').value.trim(),
+                shipping_store: document.getElementById('checkout-store').value,
+                total_amount: total,
+                items: orderItems
+            };
 
-            timer = setInterval(() => {
-                countdown--;
-                if (countdown > 0) {
-                    sendCodeBtn.textContent = `已發送 (${countdown}s)`;
+            const submitBtn = checkoutForm.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerText;
+            submitBtn.disabled = true;
+            submitBtn.innerText = "⏳ 訂單傳輸與扣除庫存中...";
+
+            try {
+                const response = await fetch('http://localhost:8000/api/orders', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(orderData)
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.status === 'success') {
+                    // 1. 顯示成功訊息
+                    alert(`🎉 訂單發送成功！\n\n📄 訂單編號：${result.order_number}\n💰 總金額：NT$${total}\n\n系統已自動為您扣除庫存，商品將盡速配送至您的取貨門市！`);
+                    
+                    // 2. 清空購物車
+                    localStorage.removeItem('techCart');
+                    
+                    // 3. 🔥 直接強制導向首頁，不留歷史紀錄
+                    window.location.replace('../index.html');
                 } else {
-                    clearInterval(timer);
-                    sendCodeBtn.disabled = false;
-                    sendCodeBtn.textContent = "重寄驗證碼";
+                    alert("⛔ 結帳失敗：" + (result.detail || "伺服器發生錯誤"));
+                    submitBtn.disabled = false;
+                    submitBtn.innerText = originalText;
                 }
-            }, 1000);
-        };
-
-        toggleNewPwdBtn.onclick = function() {
-            const type = newPwd.getAttribute('type') === 'password' ? 'text' : 'password';
-            newPwd.setAttribute('type', type);
-            this.textContent = type === 'password' ? '👁️' : '🙈';
-        };
-
-        toggleConfirmPwdBtn.onclick = function() {
-            const type = confirmPwd.getAttribute('type') === 'password' ? 'text' : 'password';
-            confirmPwd.setAttribute('type', type);
-            this.textContent = type === 'password' ? '👁️' : '🙈';
-        };
-
-        forgotPwdForm.onsubmit = function(e) {
-            e.preventDefault();
-
-            if (forgotCode.value.trim() !== generatedCode) {
-                alert("⛔ 驗證碼錯誤或已失效，請重新輸入！");
-                forgotCode.focus();
-                return;
+            } catch (error) {
+                console.error("API 錯誤:", error);
+                alert("⚠️ 無法連線至伺服器，請確認您的 Python 伺服器正在運行中。");
+                submitBtn.disabled = false;
+                submitBtn.innerText = originalText;
             }
-
-            if (newPwd.value !== confirmPwd.value) {
-                alert("⚠️ 兩次輸入的新密碼不一致，請重新確認！");
-                confirmPwd.focus();
-                return;
-            }
-
-            let usersDB = JSON.parse(localStorage.getItem('usersDatabase')) || [];
-            const userIndex = usersDB.findIndex(user => user.username === forgotUsername.value.trim());
-
-            if (userIndex > -1) {
-                usersDB[userIndex].password = newPwd.value;
-                localStorage.setItem('usersDatabase', JSON.stringify(usersDB));
-
-                alert("🎉 密碼重置成功！\n請使用您的新密碼重新登入系統。");
-                
-                const modal = bootstrap.Modal.getInstance(document.getElementById('forgotPasswordModal'));
-                if (modal) modal.hide();
-                window.location.reload();
-            } else {
-                alert("⛔ 系統錯誤：找不到該用戶資料。");
-            }
+            
+            return false; // 徹底阻擋表單重整
         };
     }
 });
