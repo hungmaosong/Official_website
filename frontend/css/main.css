@@ -1297,7 +1297,7 @@ header nav a.active {
 /* =========================================
    8. RWD 響應式修正 (手機與平板單一下拉選單)
    ========================================= */
-@media (max-width: 1500px) {
+@media (max-width: 1024px) {
 
     /* 1. 頂部導覽列：Logo在左，漢堡在右 */
     header {
@@ -1405,7 +1405,7 @@ header nav a.active {
 }
 
 /* 手機版：調整外層與圖片高度 */
-@media (max-width: 1500px) {
+@media (max-width: 1024px) {
     .carousel-item {
         height: 45vh !important;
         /* 手機版整體高度縮小，才不會佔滿整個畫面 */
@@ -1441,7 +1441,7 @@ header nav a.active {
 /* =========================================
    10. 購物車手機版跑版修復 (Cart Mobile Fix)
    ========================================= */
-@media (max-width: 1500px) {
+@media (max-width: 1024px) {
 
     /* 1. 讓表格外層容器變成「可以左右滑動」 */
     .tech-table-wrapper {
